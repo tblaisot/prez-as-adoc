@@ -1,0 +1,26 @@
+{
+  "name": "@tblaisot/prez-as-adoc",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "prez-as-adoc": "bin/prez-as-adoc.js"
+  },
+  "exports": {
+    ".": {
+      "require": "./index.cjs",
+      "import": "./index.mjs"
+    }
+  },
+  "keywords": [
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "arg": "^5.0.2"
+  }
+}

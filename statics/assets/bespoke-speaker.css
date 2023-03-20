@@ -1,0 +1,193 @@
+*,
+::before,
+::after {
+    -moz-box-sizing: inherit;
+    box-sizing: inherit;
+}
+
+html {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    font-family: sans-serif;
+    overflow: hidden;
+
+    display: grid;
+    /*grid-template-columns: 3fr 1fr;*/
+    /*grid-template-rows: 3fr 3fr 1fr;*/
+    gap: 0;
+    /*grid-auto-flow: row;*/
+    /*grid-template-areas:*/
+    /*          "present future"*/
+    /*          "present notes"*/
+    /*          "present timer";*/
+
+    grid-template-columns: 1fr 1.1fr 0.9fr;
+    grid-template-rows: min-content 1fr 2fr min-content;
+    grid-template-areas:
+        "top top top"
+        "main main next"
+        "main main notes"
+        "bottom bottom bottom";
+}
+
+
+#top {
+    grid-area: top;
+    height: 3.5rem;
+}
+#bottom {
+    grid-area: bottom;
+    height: 3.5rem;
+}
+
+#present-container {
+    grid-area: main;
+}
+
+#future-container {
+    grid-area: next;
+}
+
+#notes {
+    grid-area: notes;
+}
+
+#time { /*grid-area: timer;*/
+}
+
+#present-container, #future-container {
+    position: relative;
+    outline: solid red 2px;
+}
+
+#present-container .slide, #future-container .slide {
+    clip: auto;
+    visibility: visible;
+    outline: solid blue 1px;
+}
+
+/*#present {*/
+/*  position: absolute;*/
+/*  width: 65%;*/
+/*  height: 100%;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*}*/
+
+/*#future {*/
+/*  position: absolute;*/
+/*  width: 35%;*/
+/*  height: 100%;*/
+/*  top: 0;*/
+/*  left: 65%;*/
+/*}*/
+
+/*#notes {*/
+/*  position: absolute;*/
+/*  width: 35%;*/
+/*  height: 30%;*/
+/*  top: 30%;*/
+/*  left: 65%;*/
+/*}*/
+
+/*#timer {*/
+/*  position: absolute;*/
+/*  width: 35%;*/
+/*  height: 10%;*/
+/*  top: 90%;*/
+/*  left: 65%;*/
+/*}*/
+
+
+/*#present,*/
+/*#future {*/
+/*  !*padding: 10px;*!*/
+/*  display: grid;*/
+/*  place-items: center;*/
+/*}*/
+
+/*#notes {*/
+/*  overflow: auto;*/
+/*  font-size: 18px;*/
+/*  padding: 6px;*/
+/*}*/
+
+/*#notes #notes-content {*/
+/*  color: #444;*/
+/*  margin: 0 10px;*/
+/*  line-height: 1.4;*/
+/*  font-size: 1.2em;*/
+/*}*/
+
+/*#notes #notes-content p {*/
+/*  margin: 0 0 1em 0;*/
+/*}*/
+
+/*#time {*/
+/*  !*bottom: 0;*!*/
+/*  !*right: 0;*!*/
+/*  !*height: 10%;*!*/
+/*  !*width: 35%;*!*/
+/*  !*position: absolute;*!*/
+/*  padding: 0 6px;*/
+/*  font-size: 2em;*/
+/*}*/
+
+/*#time #clock {*/
+/*  float: left;*/
+/*  margin-left: 10px;*/
+/*}*/
+
+/*#time #timer {*/
+/*  float: right;*/
+/*  margin-right: 10px;*/
+/*  cursor: pointer;*/
+/*}*/
+
+/*!*#time::before,*!*/
+/*!*#notes::before {*!*/
+/*!*  content: attr(id);*!*/
+/*!*  text-transform: uppercase;*!*/
+/*!*  font-size: 0.75rem;*!*/
+/*!*  color: #666;*!*/
+/*!*  display: block;*!*/
+/*!*  padding: 10px 10px 5px 10px;*!*/
+/*!*}*!*/
+
+/*!*#time::before {*!*/
+/*!*  border-top: 1px solid rgba(200, 200, 200, 0.5);*!*/
+/*!*}*!*/
+
+
+/*!* Override of bespokes css for speker view *!*/
+/*.bespoke-inactive {*/
+/*  opacity: 1;*/
+/*}*/
+/*.bespoke-slide {*/
+/*  !*position: relative;*!*/
+/*  transform-origin: top left;*/
+/*}*/
+
+
+/*.deck.full {*/
+/*  position: absolute;*/
+/*  top: 50%;*/
+/*  left: 50%;*/
+/*  overflow: hidden;*/
+/*  margin-top: calc(*/
+/*          var(--slide-height) / 2 * -1*/
+/*  );*/
+/*  margin-left: calc(*/
+/*          var(--slide-width) / 2 * -1*/
+/*  );*/
+/*  width: var(--slide-width);*/
+/*  height: var(--slide-height);*/
+/*  background-color: black;*/
+/*  transform: scale(var(--deck-full-scale));*/
+/*}*/

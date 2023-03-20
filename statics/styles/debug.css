@@ -1,0 +1,9 @@
+.debug .slide {
+    outline: 1px solid blue;
+}
+.debug.overflowing {
+    overflow: visible;
+}
+.debug.overflowing .slide.active {
+    outline: 10px solid red !important;
+}
