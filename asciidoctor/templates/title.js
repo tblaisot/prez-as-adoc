@@ -1,4 +1,4 @@
-const {HELPERS, TEMPLATES} = require("@tblaisot/asciidoctor-js-templates");
+const {HELPERS, TEMPLATES} = require("@tblaisot/asciidoctorjs-templates-js");
 const {$, $h, $a, isDefined, sectionTitle} = HELPERS;
 
 module.exports = function ({node}) {

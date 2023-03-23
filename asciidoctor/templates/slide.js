@@ -1,6 +1,6 @@
 const {resolve} = require("path");
 const {readFileSync, existsSync} = require("fs");
-const {HELPERS, TEMPLATES} = require("@tblaisot/asciidoctor-js-templates");
+const {HELPERS, TEMPLATES} = require("@tblaisot/asciidoctorjs-templates-js");
 const {$, isEmptyString} = HELPERS;
 
 function resolveTemplate(paths, templateName) {
