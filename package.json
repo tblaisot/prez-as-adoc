@@ -1,7 +1,11 @@
 {
   "name": "@tblaisot/prez-as-adoc",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tblaisot/prez-as-adoc.git"
+  },
   "type": "module",
   "bin": {
     "prez-as-adoc": "bin/prez-as-adoc.js"
