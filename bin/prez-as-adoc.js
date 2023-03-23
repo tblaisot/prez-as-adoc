@@ -1,17 +1,20 @@
 #!/usr/bin/env node
+import * as path from 'node:path';
+import * as url from 'node:url';
+import {mkdirSync} from 'node:fs';
 import arg from 'arg';
-
-import * as path from "path";
-import {asciidoctor, BASE_OPTIONS, REGISTRY} from "@tblaisot/asciidoctor-js-templates";
-import * as url from 'url';
+import {asciidoctor, BASE_OPTIONS, REGISTRY} from "@tblaisot/asciidoctorjs-templates-js";
 
 import * as slidesTreeprocessor from "../asciidoctor/extensions/slides_treeprocessor.js";
 import * as speakerNotesTreeprocessor from "../asciidoctor/extensions/speaker_notes_treeprocessor.js";
 
+console.log("Usage of the CLI is Deprecated")
+
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-slidesTreeprocessor.register(REGISTRY);
+// order is important
 speakerNotesTreeprocessor.register(REGISTRY);
+slidesTreeprocessor.register(REGISTRY);
 
 const args = arg(
     {
@@ -35,6 +38,9 @@ if (overloads && overloads.length > 0) {
 }
 const base_dir = path.resolve(process.cwd(), args['--base_dir'] || './src');
 const to_dir = path.resolve(process.cwd(), args['--to_dir'] || './dist');
+
+mkdirSync(to_dir)
+
 const slides_templates = args['--slides-templates'] || [];
 
 const OPTIONS = {
