@@ -1,6 +1,5 @@
-const {HELPERS, TEMPLATES} = require("@tblaisot/asciidoctorjs-templates-js");
-const {admonition: admonition_template} = TEMPLATES;
-const {$aside} = HELPERS;
+const {admonition: admonition_template} = require("@tblaisot/asciidoctorjs-templates-js/templates");
+const {$aside} = require("@tblaisot/asciidoctorjs-templates-js/helpers");
 
 module.exports = function ({node}) {
     if (node.hasRole('speaker')) {

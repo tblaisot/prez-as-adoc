@@ -2,11 +2,12 @@ import {HTMLElement, parse as parseHTML, TextNode} from 'node-html-parser';
 import {asciidoctor, BASE_OPTIONS, HELPERS, REGISTRY} from "@tblaisot/asciidoctorjs-templates-js";
 import * as path from "path";
 import * as url from 'url';
-import * as slidesTreeprocessor from "../../asciidoctor/extensions/slides_treeprocessor.js";
-import * as  speakerNotesTreeprocessor from "../../asciidoctor/extensions/speaker_notes_treeprocessor.js";
+import {slidesTreeprocessor, speakerNotesTreeprocessor} from "../asciidoctor/extensions/index.js";
 
 const {$, isEmptyString} = HELPERS;
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+const ASCIIDOCTOR_TEMPLATES_PATH = '../asciidoctor/templates';
 
 slidesTreeprocessor.register(REGISTRY);
 speakerNotesTreeprocessor.register(REGISTRY);
@@ -53,7 +54,7 @@ function transformIndexHtml(
     const document = parseHTML(html);
 
 
-    const template_dirs = [...BASE_OPTIONS.template_dirs, path.resolve(__dirname, '../../asciidoctor/templates')]
+    const template_dirs = [...BASE_OPTIONS.template_dirs, path.resolve(__dirname, ASCIIDOCTOR_TEMPLATES_PATH)]
     if (asciidoctorTemplatesOverloads && asciidoctorTemplatesOverloads.length > 0) {
         asciidoctorTemplatesOverloads.forEach(overload => {
             template_dirs.push(path.resolve(process.cwd(), overload));
@@ -105,7 +106,7 @@ function transformIndexHtml(
     return document.toString();
 }
 
-export const prezAsAdocPlugin = (options) => {
+export const prezAsAdoc = (options) => {
     return {
         name: 'prez-as-adoc',
         transformIndexHtml: transformIndexHtml.bind(null, options),
