@@ -1,5 +1,5 @@
 import {HTMLElement, parse as parseHTML, TextNode} from 'node-html-parser';
-import {asciidoctor, BASE_OPTIONS, HELPERS, REGISTRY} from "@tblaisot/asciidoctor-js-templates";
+import {asciidoctor, BASE_OPTIONS, HELPERS, REGISTRY} from "@tblaisot/asciidoctorjs-templates-js";
 import * as path from "path";
 import * as url from 'url';
 import * as slidesTreeprocessor from "../../asciidoctor/extensions/slides_treeprocessor.js";

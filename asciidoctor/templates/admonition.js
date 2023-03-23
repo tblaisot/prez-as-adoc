@@ -1,4 +1,4 @@
-const {HELPERS, TEMPLATES} = require("@tblaisot/asciidoctor-js-templates");
+const {HELPERS, TEMPLATES} = require("@tblaisot/asciidoctorjs-templates-js");
 const {admonition: admonition_template} = TEMPLATES;
 const {$aside} = HELPERS;
 

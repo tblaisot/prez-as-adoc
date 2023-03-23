@@ -1,4 +1,4 @@
-import {HELPERS} from "@tblaisot/asciidoctor-js-templates";
+import {HELPERS} from "@tblaisot/asciidoctorjs-templates-js";
 const {sectionTitle, slice_text, $h, $div} = HELPERS;
 
 function debugAST(node) {
