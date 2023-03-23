@@ -10,7 +10,8 @@
     ".": {
       "require": "./index.cjs",
       "import": "./index.mjs"
-    }
+    },
+    "./vitejs/plugins/prez-as-adoc-plugin.js": "./vitejs/plugins/prez-as-adoc-plugin.js"
   },
   "keywords": [
     "cli"

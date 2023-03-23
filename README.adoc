@@ -1,0 +1,30 @@
+= prez-as-adoc
+
+This is a project to generate Bespoke slide deck.
+
+It allow to use slide templates (layout).
+
+It can be used as a CLI or as a Vite plugin (prefered method).
+
+== Usage as CLI
+
+[source,bash]
+----
+prez-as-adoc --base_dir=./src --to_dir=./dist --slides-templates=./slide-templates ./src/index.adoc
+----
+
+== Usage as Vite Plugin
+
+.vite.config.js
+[source,bash]
+----
+// vite.config.js
+import { prezAsAdocPlugin } from '@tblaisot/prez-as-adoc/vitejs/plugins/prez-as-adoc-plugin.js'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+    plugins: [
+        prezAsAdocPlugin({slidesTemplates: ['./slide-templates']})
+    ]
+})
+----
