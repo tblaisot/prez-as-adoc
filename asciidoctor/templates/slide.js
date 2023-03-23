@@ -1,13 +1,12 @@
 const {resolve} = require("path");
 const {readFileSync, existsSync} = require("fs");
-const {HELPERS, TEMPLATES} = require("@tblaisot/asciidoctorjs-templates-js");
-const {$, isEmptyString} = HELPERS;
+const {$, isEmptyString} = require("@tblaisot/asciidoctorjs-templates-js/helpers");
 
 function resolveTemplate(paths, templateName) {
     // find in folders
-    for(let path of paths){
-        const templatePath = resolve(path,`${templateName}-slide.html`)
-        if(existsSync(templatePath)){
+    for (let path of paths) {
+        const templatePath = resolve(path, `${templateName}-slide.html`)
+        if (existsSync(templatePath)) {
             return readFileSync(templatePath, {encoding: 'utf-8'});
         }
     }
