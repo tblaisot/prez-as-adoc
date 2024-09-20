@@ -1,0 +1,38 @@
+/* Types */
+
+
+@import './slide-list.css' screen;
+@import './slide-full.css' screen;
+
+/*.slides {*/
+/*    --slide-ratio: calc(16 / 9);*/
+/*}*/
+
+/* Slide */
+
+.bespoke-slide {
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: var(--slide-width);
+    height: var(--slide-height);
+}
+
+/* Number */
+
+/*.slide::after {*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    left: 875px;*/
+/*    box-sizing: border-box;*/
+/*    padding-top: 15px;*/
+/*    width: var(--ribbon-size);*/
+/*    height: calc(var(--ribbon-size) * 2);*/
+/*    background-image: url('ribbon.svg');*/
+/*    background-size: cover;*/
+/*    color: white;*/
+/*    counter-increment: slide;*/
+/*    content: counter(slide);*/
+/*    text-align: center;*/
+/*}*/

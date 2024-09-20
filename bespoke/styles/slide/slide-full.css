@@ -1,0 +1,16 @@
+/* Slide Full */
+
+.bespoke-parent.bespoke-full .bespoke-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    clip: rect(0 0 0 0);
+    visibility: hidden;
+}
+
+/* Active */
+
+.bespoke-parent.bespoke-full .bespoke-slide.bespoke-active {
+    clip: auto;
+    visibility: visible;
+}

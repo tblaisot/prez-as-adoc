@@ -1,0 +1,56 @@
+/* Progress */
+
+.bespoke-slide-number .bespoke-slide-index {
+    content: var(--deck-slide-index);
+}
+.bespoke-slide-number .bespoke-slides-count {
+    content: var(--deck-slides-count);
+}
+.bespoke-progress-bar {
+    width: var(--deck-progress-percentage);
+}
+
+.bespoke-progress-bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: var(--progress-size);
+    overflow: hidden;
+    transition: all 0.2s linear;
+}
+
+.bespoke-progress-bar::before {
+    display: block;
+    width: 100%;
+    height: var(--progress-size);
+    background-color: var(--color-blue);
+    content: '';
+    transform-origin: 0 100%;
+    transform: skewX(45deg);
+}
+
+.bespoke-progress-bar[style*='100%']::before {
+    transform: none;
+}
+
+/* List */
+
+.bespoke-parent.list .bespoke-progress-bar {
+    display: none;
+}
+
+/* Full */
+
+.bespoke-parent.full .bespoke-progress-bar {
+    display: block;
+}
+
+/* Print */
+
+@media print {
+    .bespoke-parent.bespoke-list .bespoke-progress-bar,
+    .bespoke-parent.bespoke-full .bespoke-progress-bar {
+        display: none;
+    }
+}

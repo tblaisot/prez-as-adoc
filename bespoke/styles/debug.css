@@ -1,0 +1,9 @@
+.bespoke-parent.bespoke-debug .bespoke-slide {
+    outline: 1px solid blue;
+}
+.bespoke-parent.bespoke-debug.bespoke-overflowing {
+    overflow: visible;
+}
+.bespoke-parent.bespoke-debug.bespoke-overflowing .bespoke-slide.bespoke-active {
+    outline: 10px solid red !important;
+}

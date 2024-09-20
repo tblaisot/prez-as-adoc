@@ -1,0 +1,33 @@
+body.bespoke-editor .bespoke-parent.bespoke-list {
+    grid-area: list;
+    position: relative;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+body.bespoke-editor .bespoke-parent.bespoke-list .bespoke-slide.bespoke-active {
+    box-shadow: 0 20px 50px rgba(6, 127, 248, 0.3);
+}
+
+body.bespoke-editor {
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+body.bespoke-editor .bespoke-preview {
+    grid-area: preview;
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+body.bespoke-editor {
+    display: grid;
+    grid-template-columns: clamp(100px, 30%, 300px) 3fr; /*FIXME*/
+    grid-template-rows: 100%;
+    grid-template-areas: 'list preview';
+    justify-content: center;
+    align-items: center;
+}
