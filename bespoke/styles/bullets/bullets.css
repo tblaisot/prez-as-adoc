@@ -1,0 +1,18 @@
+.bespoke-bullet.bespoke-bullet-active {
+    opacity: 1;
+}
+.bespoke-bullet.bespoke-bullet-inactive {
+    opacity: 0;
+}
+
+.bespoke-parent.bespoke-list .bespoke-bullet.bespoke-bullet-inactive {
+    opacity: 1;
+}
+
+.bespoke-parent.bespoke-speaker--future .bespoke-bullet.bespoke-bullet-inactive {
+    opacity: 1;
+}
+
+.bespoke-parent.bespoke-speaker--present .bespoke-bullet.bespoke-bullet-inactive {
+    opacity: 0.7;
+}

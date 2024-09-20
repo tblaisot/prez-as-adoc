@@ -1,0 +1,30 @@
+/* Slide List */
+.bespoke-parent.bespoke-list .bespoke-slide {
+    border-radius: 2px;
+    box-shadow: 0 20px 50px rgb(0 0 0 / 30%);
+    transform-origin: 0 0;
+    transform: scale(
+        var(--slide-scale)
+    );
+}
+
+.bespoke-parent.bespoke-list .bespoke-slide * {
+    pointer-events: none;
+}
+
+/* Hover */
+
+.bespoke-parent.bespoke-list .bespoke-slide:hover {
+    box-shadow:
+        0 0 0 20px rgb(0 0 0 / 10%),
+        0 20px 50px rgb(0 0 0 / 30%);
+}
+
+/* Active */
+
+.bespoke-parent.bespoke-list .bespoke-slide.bespoke-active {
+    box-shadow:
+        0 0 0 1px #376da3,
+        0 0 0 20px #4b86c2,
+        0 20px 50px rgb(0 0 0 / 30%);
+}
