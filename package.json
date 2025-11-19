@@ -33,12 +33,11 @@
     "@tblaisot/asciidoctorjs-templates-js": "^0.1.0",
     "@tblaisot/vite-plugin-html-x-adoc": "^0.1.0",
     "arg": "^5.0.2",
-    "node-html-parser": "^6.1.5"
-  },
-  "peerDependencies": {
-    "vite": ">=4.0.0"
+    "node-html-parser": "^7.0.1",
+    "@asciidoctor/core": "^3.0.4",
+    "asciidoctor": "^3.0.4",
+    "vite": "^7.2.2"
   },
   "devDependencies": {
-    "vite": "^4.2.1"
   }
 }
