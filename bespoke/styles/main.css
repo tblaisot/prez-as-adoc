@@ -5,4 +5,6 @@
 @import url("./blocks/progress.css");
 @import url("./bullets/bullets.css");
 
+@import url("./speaker/speaker.css");
+
 @import url("./debug.css");
