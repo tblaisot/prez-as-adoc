@@ -1,0 +1,302 @@
+= Prez-as-Adoc AsciiDoc Converter
+
+A custom AsciiDoc converter for the `@tblaisot/vite-plugin-html-x-adoc` plugin, specifically designed for creating slide presentations with custom templates and treeprocessors.
+
+== Overview
+
+The `createPrezAsAdocAsciidocConverter` function provides a converter that extends the standard AsciiDoc processing with:
+
+* Custom templates from `@tblaisot/asciidoctorjs-templates-js`
+* Slide treeprocessor for presentation slides
+* Speaker notes treeprocessor
+* Custom template directories support
+* Slide template directories support
+
+== Installation
+
+Install the required dependencies:
+
+[source,bash]
+----
+npm install @tblaisot/vite-plugin-html-x-adoc @tblaisot/prez-as-adoc
+----
+
+== Basic Usage
+
+=== 1. Configure Vite
+
+Add the plugin to your `vite.config.js`:
+
+[source,javascript]
+----
+import { defineConfig } from 'vite';
+import { vitePluginHtmlXAdoc } from '@tblaisot/vite-plugin-html-x-adoc';
+import { createPrezAsAdocAsciidocConverter } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+export default defineConfig({
+  plugins: [
+    vitePluginHtmlXAdoc({
+      asciidocConverterFn: createPrezAsAdocAsciidocConverter({
+        baseDir: './src',
+        toDir: './dist',
+        rootDir: process.cwd()
+      })
+    })
+  ]
+});
+----
+
+=== 2. HTML Structure
+
+Your HTML file must follow this structure:
+
+[source,html]
+----
+<!DOCTYPE html>
+<html data-adoc="./presentation.adoc">
+<head>
+  <meta charset="UTF-8">
+  <title>Presentation</title>
+</head>
+<body>
+  <div data-adoc-insert-here></div>
+</body>
+</html>
+----
+
+* The `data-adoc` attribute on the `<html>` element specifies the path to your AsciiDoc file (relative to the HTML file)
+* The `data-adoc-insert-here` selector marks where the converted AsciiDoc content will be inserted
+
+=== 3. AsciiDoc Presentation File
+
+Create your AsciiDoc presentation file (e.g., `presentation.adoc`):
+
+[source,asciidoc]
+----
+= My Presentation
+:author: Jane Smith
+:description: A slide presentation
+
+== Slide One
+
+Content for the first slide
+
+== Slide Two
+
+Content for the second slide
+
+[NOTE]
+====
+Speaker notes for slide two
+====
+----
+
+== Configuration Options
+
+The `createPrezAsAdocAsciidocConverter` function accepts the following options:
+
+[source,javascript]
+----
+createPrezAsAdocAsciidocConverter({
+  // Base directory for AsciiDoc processing
+  baseDir: './src',  // default: './src'
+  
+  // Output directory for AsciiDoc processing
+  toDir: './dist',  // default: './dist'
+  
+  // Root directory for resolving paths
+  rootDir: process.cwd(),  // default: process.cwd()
+  
+  // Optional: custom template directories (overrides default templates)
+  asciidoctorTemplatesOverloads: ['./custom-templates'],
+  
+  // Optional: slide template directories
+  slidesTemplates: ['./slide-templates']
+})
+----
+
+=== Option Details
+
+`baseDir`::
+  Base directory used by AsciiDoc for resolving includes and other relative paths.
+  Default: `'./src'`
+
+`toDir`::
+  Output directory used by AsciiDoc for resolving output paths.
+  Default: `'./dist'`
+
+`rootDir`::
+  Root directory for resolving all relative paths.
+  Default: `process.cwd()`
+
+`asciidoctorTemplatesOverloads`::
+  Array of paths to custom template directories that override default templates.
+  Templates in these directories will take precedence over the default templates.
+  Default: `[]`
+
+`slidesTemplates`::
+  Array of paths to slide template directories.
+  These templates are used for rendering individual slides.
+  Default: `[]`
+
+== Features
+
+=== Custom Templates
+
+The converter uses custom templates from `@tblaisot/asciidoctorjs-templates-js` and includes additional templates from the prez-as-adoc package.
+
+=== Slide Treeprocessor
+
+The slide treeprocessor processes AsciiDoc sections as slides, enabling slide-based presentations.
+
+=== Speaker Notes Treeprocessor
+
+The speaker notes treeprocessor extracts and processes speaker notes from your AsciiDoc documents.
+
+=== Template Overloads
+
+You can override default templates by providing custom template directories:
+
+[source,javascript]
+----
+createPrezAsAdocAsciidocConverter({
+  asciidoctorTemplatesOverloads: [
+    './custom-templates',
+    './project-specific-templates'
+  ]
+})
+----
+
+=== Slide Templates
+
+Specify custom slide template directories:
+
+[source,javascript]
+----
+createPrezAsAdocAsciidocConverter({
+  slidesTemplates: [
+    './slide-templates',
+    './custom-slides'
+  ]
+})
+----
+
+== Complete Example
+
+=== Step 1: Install Dependencies
+
+[source,bash]
+----
+npm install @tblaisot/vite-plugin-html-x-adoc @tblaisot/prez-as-adoc @tblaisot/asciidoctorjs-templates-js
+----
+
+=== Step 2: Configure Vite
+
+[source,javascript]
+----
+// vite.config.js
+import { defineConfig } from 'vite';
+import { vitePluginHtmlXAdoc } from '@tblaisot/vite-plugin-html-x-adoc';
+import { createPrezAsAdocAsciidocConverter } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+export default defineConfig({
+  plugins: [
+    vitePluginHtmlXAdoc({
+      asciidocConverterFn: createPrezAsAdocAsciidocConverter({
+        baseDir: './src',
+        toDir: './dist',
+        rootDir: process.cwd(),
+        // Optional: Add custom template directories
+        asciidoctorTemplatesOverloads: ['./custom-templates'],
+        // Optional: Add slide template directories
+        slidesTemplates: ['./slide-templates']
+      })
+    })
+  ]
+});
+----
+
+=== Step 3: Create HTML File
+
+[source,html]
+----
+<!-- presentation.html -->
+<!DOCTYPE html>
+<html data-adoc="./presentation.adoc">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <div data-adoc-insert-here></div>
+</body>
+</html>
+----
+
+=== Step 4: Create AsciiDoc Presentation File
+
+[source,asciidoc]
+----
+// presentation.adoc
+= My Presentation
+:author: Jane Smith
+:description: A slide presentation
+
+== Slide One
+
+Content for the first slide
+
+== Slide Two
+
+Content for the second slide
+
+[NOTE]
+====
+Speaker notes for slide two
+====
+----
+
+=== Result
+
+The prez-as-adoc converter will:
+
+* Process slides using custom treeprocessors
+* Generate speaker notes
+* Use custom templates for slide rendering
+* Support custom template directories
+* Support slide template directories
+
+== Development Mode
+
+In development mode (using `@tblaisot/vite-plugin-html-x-adoc`):
+
+* Changes to `.adoc` files trigger automatic page updates via HMR
+* Content is injected into the element matching `data-adoc-insert-here`
+
+== Build Mode
+
+In build mode (using `@tblaisot/vite-plugin-html-x-adoc`):
+
+* AsciiDoc files are converted to HTML
+* HTML content is injected into the `data-adoc-insert-here` element
+* Metadata is automatically added to the HTML document
+
+== Troubleshooting
+
+=== Converter Not Working
+
+* Ensure `@tblaisot/prez-as-adoc` is installed
+* Verify `@tblaisot/asciidoctorjs-templates-js` is installed
+* Check that template directories exist if specified
+
+=== Templates Not Found
+
+* Verify template directory paths are correct relative to `rootDir`
+* Check that template files exist in the specified directories
+* Ensure template directory paths are absolute or relative to `rootDir`
+
+=== Slides Not Rendering
+
+* Verify slide templates are in the correct directory
+* Check that `slidesTemplates` paths are correct
+* Ensure AsciiDoc structure follows slide format (sections as slides)
