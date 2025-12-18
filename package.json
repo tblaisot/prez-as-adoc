@@ -1,7 +1,7 @@
 {
   "name": "@tblaisot/prez-as-adoc",
-  "version": "0.0.3",
-  "description": "",
+  "version": "0.1.0",
+  "description": "A project to generate Bespoke slide deck form adoc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/tblaisot/prez-as-adoc.git"
@@ -27,10 +27,11 @@
   "keywords": [
     "cli"
   ],
-  "author": "",
+  "author": "Thomas Blaisot",
   "license": "ISC",
   "dependencies": {
-    "@tblaisot/asciidoctorjs-templates-js": "^0.0.2",
+    "@tblaisot/asciidoctorjs-templates-js": "^0.1.0",
+    "@tblaisot/vite-plugin-html-x-adoc": "^0.1.0",
     "arg": "^5.0.2",
     "node-html-parser": "^6.1.5"
   },
