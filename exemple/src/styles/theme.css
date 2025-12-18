@@ -1,0 +1,62 @@
+/* *****************************************
+* THEME
+***************************************** */
+
+.bespoke-parent {
+  font-size: 1.5em;
+  background: #111;
+  color: #ddd;
+  font-family: futura, helvetica, arial, arial, sans-serif;
+  text-align: center;
+  transition: background 1s ease;
+}
+
+.bespoke-slide {
+  transition: opacity .5s ease;
+}
+
+.bespoke-active {
+  transition-delay: .5s
+}
+
+.bespoke-active[data-bespoke-backdrop] {
+  transition-delay: .75s
+}
+
+.bespoke-progress-bar {
+  background: #ddd;
+  transition: width 1s ease
+}
+
+.bespoke-backdrop {
+  transition: opacity 1s ease;
+}
+
+.bespoke-bullet {
+  transition: opacity .3s ease
+}
+
+.bespoke-backdrop {
+  opacity: 0;
+  -webkit-transition: opacity 1s ease, -webkit-transform 6s ease;
+  transition: opacity 1s ease, transform 6s ease;
+  background-size: cover;
+  background-position: 50% 50%;
+  -webkit-transform: translateZ(0)scale(1.3);
+  transform: translateZ(0)scale(1.3)
+}
+
+.bespoke-backdrop-active,
+.bespoke-backdrop-before {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0)
+}
+
+.bespoke-backdrop-before {
+  -webkit-transition-delay: .2s;
+  transition-delay: .2s
+}
+
+.bespoke-backdrop-active {
+  opacity: .5
+}

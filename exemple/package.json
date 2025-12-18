@@ -1,0 +1,25 @@
+{
+    "scripts": {
+        "vite:dev": "vite",
+        "vite:build": "vite build",
+        "vite:preview": "vite preview",
+        "cli:build": "prez-as-adoc --base_dir=./src --to_dir=./dist --slides-templates=./slide-templates ./src/index.adoc"
+    },
+    "type": "module",
+    "devDependencies": {
+        "@tblaisot/asciidoctorjs-templates-js": "^0.1.0",
+        "@tblaisot/prez-as-adoc": "^0.1.0",
+        "@tblaisot/vite-plugin-html-x-adoc": "^0.1.0",
+        "rollup": "^3.29.5",
+        "sass": "^1.79.2",
+        "vite": "^5.4.7"
+    },
+    "dependencies": {
+        "bespoke": "^1.1.0",
+        "bespoke-bullets": "^1.1.0",
+        "bespoke-classes": "^1.0.0",
+        "bespoke-extern": "^1.0.0",
+        "bespoke-multimedia": "^1.1.0",
+        "bespoke-state": "^1.0.0"
+    }
+}
