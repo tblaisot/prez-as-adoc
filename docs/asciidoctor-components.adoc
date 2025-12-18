@@ -1,0 +1,522 @@
+= AsciiDoctor Components
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Overview
+
+The `asciidoctor/` directory contains components that extend AsciiDoctor.js to transform AsciiDoc documents into presentation-ready HTML. This includes custom extensions that modify the document structure and templates that generate the final HTML output.
+
+== Directory Structure
+
+[source,text]
+----
+asciidoctor/
+├── extensions/
+│   ├── index.js                        # Extension exports
+│   ├── slides_treeprocessor.js         # Converts sections to slides
+│   └── speaker_notes_treeprocessor.js  # Processes speaker notes
+└── templates/
+    ├── index.cjs                       # Template exports
+    ├── package.json                    # Template package config
+    ├── document.js                     # Document template
+    ├── slide.js                        # Slide template
+    ├── title.js                        # Title template
+    ├── speaker_note.js                 # Speaker notes template
+    ├── preamble.js                     # Preamble template
+    ├── section.js                      # Section template
+    └── admonition.js                   # Admonition template
+----
+
+== Extensions
+
+Extensions modify the AsciiDoc Abstract Syntax Tree (AST) before template rendering.
+
+=== extensions/index.js
+
+Simple export module that exposes the extension modules.
+
+[source,javascript]
+----
+export * as slidesTreeprocessor from "./slides_treeprocessor.js";
+export * as speakerNotesTreeprocessor from "./speaker_notes_treeprocessor.js";
+----
+
+=== slides_treeprocessor.js
+
+The core extension that transforms a hierarchical AsciiDoc document into a flat structure of slides.
+
+==== Purpose
+
+* Converts section elements into slide elements
+* Creates a title slide from document header
+* Flattens nested sections into top-level slides
+* Assigns slide templates based on attributes
+
+==== Algorithm
+
+. *Recurse through sections*:
+** For each section, create a slide block
+** Create a title block from section heading
+** Move section content blocks into the slide
+** Recursively process nested sections
+** Add all slides to document root level
+
+. *Create title slide*:
+** Extract document title and subtitle
+** Create a special slide with `slide-template="title-slide"`
+** Add preamble content to title slide
+** Insert title slide at the beginning
+
+==== Key Functions
+
+`recurse(node)`::
+Recursively processes sections and converts them to slides
+
+`createBlock(context, content, attributes)`::
+Creates new AST blocks (slides, titles)
+
+==== Registration
+
+[source,javascript]
+----
+import { slidesTreeprocessor } from './asciidoctor/extensions/index.js';
+
+slidesTreeprocessor.register(registry);
+----
+
+==== Configuration Attributes
+
+`slide-template-attr`::
+Name of the attribute used to specify slide templates (default: `slide-template`)
+
+`slide-default-template`::
+Default template to use when none specified
+
+==== Example Transformation
+
+.Input AsciiDoc
+[source,asciidoc]
+----
+= My Presentation
+:author: John Doe
+
+Preamble content shown on title slide.
+
+== Introduction
+
+First slide content.
+
+=== Nested Section
+
+Nested content becomes a separate slide.
+----
+
+.Output AST (conceptual)
+[source,text]
+----
+Document
+├── Slide (template=title-slide, level=0)
+│   ├── Title: "My Presentation"
+│   └── Preamble
+├── Slide (level=1)
+│   ├── Title: "Introduction"
+│   └── Content blocks
+└── Slide (level=2)
+    ├── Title: "Nested Section"
+    └── Content blocks
+----
+
+=== speaker_notes_treeprocessor.js
+
+Identifies and processes speaker notes blocks.
+
+==== Purpose
+
+* Detect blocks marked as speaker notes
+* Change their context to `speaker_note`
+* Ensure proper rendering and styling
+
+==== Detection
+
+Speaker notes are typically marked using AsciiDoc roles:
+
+[source,asciidoc]
+----
+[.notes]
+****
+These are speaker notes.
+Only visible in speaker view.
+****
+----
+
+==== Processing
+
+. Finds blocks with the `notes` role or specific attributes
+. Changes block context from generic block to `speaker_note`
+. Preserves block content for template rendering
+
+==== Registration Order
+
+⚠️ **Important**: Must be registered *before* `slides_treeprocessor`:
+
+[source,javascript]
+----
+// Correct order
+speakerNotesTreeprocessor.register(registry);
+slidesTreeprocessor.register(registry);
+----
+
+This ensures notes are properly identified before sections are converted to slides.
+
+== Templates
+
+Templates generate the final HTML from the processed AST. They use the `@tblaisot/asciidoctorjs-templates-js` template system.
+
+=== Template System
+
+Templates are JavaScript modules that export a function receiving a node and returning HTML:
+
+[source,javascript]
+----
+module.exports = function({node}) {
+    // Access node properties
+    // Return HTML string
+    return '<div>...</div>';
+}
+----
+
+=== templates/slide.js
+
+The most complex template, handling slide rendering with template support.
+
+==== Features
+
+* *Template Resolution*: Loads external HTML slide templates
+* *Slot System*: Places content into template slots
+* *Notes Separation*: Separates speaker notes from slide content
+* *Fallback*: Simple rendering when no template specified
+
+==== Template Resolution Process
+
+. Read `slide-template` attribute (or configured attribute name)
+. Search template directories for `{template-name}-slide.html`
+. Load template file content
+. Process slots
+
+==== Slot System
+
+Templates use HTML comments as slot markers:
+
+[source,html]
+----
+<div class="slide-layout">
+    <!-- slot=title -->
+    <div class="content">
+        <!-- slot=default -->
+    </div>
+    <aside>
+        <!-- slot=sidebar -->
+    </aside>
+</div>
+----
+
+Content blocks specify which slot they belong to:
+
+[source,asciidoc]
+----
+== Slide Title
+
+[slot="sidebar"]
+Sidebar content here.
+
+Main content (goes to default slot).
+----
+
+==== Special Slots
+
+`slot=title`::
+Receives the slide title block
+
+`slot=default`::
+Receives content without explicit slot attribute
+
+`slot=all`::
+Receives all content blocks (useful for wrapper templates)
+
+==== Output Structure
+
+[source,html]
+----
+<section class="slide {template-name} {role}">
+    <!-- Template content with slots replaced -->
+    <!-- Speaker notes -->
+</section>
+----
+
+==== Configuration
+
+Slide template behavior is controlled by document attributes:
+
+`slide-template-dirs`::
+Array of paths to search for templates
+
+`slide-template-attr`::
+Attribute name for specifying templates (default: `slide-template`)
+
+`slide-default-template`::
+Default template when none specified
+
+=== templates/title.js
+
+Renders title blocks within slides.
+
+==== Features
+
+* Generates appropriate heading level (`<h1>`, `<h2>`, etc.)
+* Applies roles as CSS classes
+* Preserves title content and formatting
+
+==== Output
+
+[source,html]
+----
+<h{level} class="{role}">{title}</h{level}>
+----
+
+=== templates/speaker_note.js
+
+Renders speaker notes blocks.
+
+==== Features
+
+* Wraps notes in a specific CSS class
+* Ensures notes are hidden in main presentation view
+* Makes notes accessible to speaker view plugin
+
+==== Output
+
+[source,html]
+----
+<aside class="prez-speaker-notes">
+    {note content}
+</aside>
+----
+
+=== templates/document.js
+
+Renders the root document element.
+
+==== Features
+
+* Wraps entire presentation in article or section
+* Applies document-level roles and IDs
+* Contains all slides
+
+==== Output
+
+[source,html]
+----
+<article id="{docid}" class="{doctype} {role}">
+    {all slides}
+</article>
+----
+
+=== templates/preamble.js
+
+Renders preamble content (content before first section).
+
+==== Features
+
+* Wraps preamble blocks
+* Typically used in title slide
+* Supports author info, description, etc.
+
+=== templates/section.js
+
+Renders regular sections (when not converted to slides).
+
+==== Use Case
+
+Used for nested content within a slide that shouldn't become a separate slide.
+
+=== templates/admonition.js
+
+Renders AsciiDoc admonition blocks (NOTE, TIP, WARNING, etc.).
+
+==== Features
+
+* Preserves admonition type
+* Applies appropriate styling classes
+* Supports custom icons
+
+==== Output
+
+[source,html]
+----
+<div class="admonitionblock {type}">
+    <table>
+        <tr>
+            <td class="icon">...</td>
+            <td class="content">...</td>
+        </tr>
+    </table>
+</div>
+----
+
+== Usage in Code
+
+=== CLI Usage
+
+The CLI tool registers extensions and configures templates:
+
+[source,javascript]
+----
+import { REGISTRY } from '@tblaisot/asciidoctorjs-templates-js';
+import * as speakerNotesTreeprocessor from './asciidoctor/extensions/speaker_notes_treeprocessor.js';
+import * as slidesTreeprocessor from './asciidoctor/extensions/slides_treeprocessor.js';
+
+// Order matters!
+speakerNotesTreeprocessor.register(REGISTRY);
+slidesTreeprocessor.register(REGISTRY);
+
+const OPTIONS = {
+    template_dirs: [
+        path.resolve(__dirname, '../asciidoctor/templates')
+    ],
+    attributes: {
+        'slide-template-dirs': ['./my-templates']
+    },
+    base_dir: './src',
+    to_dir: './dist'
+};
+
+asciidoctor.convertFile('presentation.adoc', OPTIONS);
+----
+
+=== Vite Plugin Usage
+
+The Vite plugin automatically configures extensions and templates:
+
+[source,javascript]
+----
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+export default defineConfig({
+    plugins: [
+        prezAsAdoc({
+            slidesTemplates: ['./slide-templates'],
+            asciidoctorTemplatesOverloads: ['./custom-templates']
+        })
+    ]
+});
+----
+
+== Custom Templates
+
+=== Creating Custom Slide Templates
+
+. Create a directory for your templates
+. Create HTML files named `{template-name}-slide.html`
+. Use slot markers for content placement
+. Configure template directory in options
+
+.Example: two-column-slide.html
+[source,html]
+----
+<div class="two-column-layout">
+    <div class="column-left">
+        <!-- slot=left -->
+    </div>
+    <div class="column-right">
+        <!-- slot=right -->
+    </div>
+</div>
+----
+
+.Usage in AsciiDoc
+[source,asciidoc]
+----
+[slide-template="two-column"]
+== My Two Column Slide
+
+[slot="left"]
+Left column content.
+
+[slot="right"]
+Right column content.
+----
+
+=== Overriding Built-in Templates
+
+Provide a custom template directory with files matching built-in template names:
+
+* `slide.js` - Override slide rendering
+* `title.js` - Override title rendering
+* `document.js` - Override document wrapper
+
+== Best Practices
+
+=== Extension Registration
+
+Always register `speakerNotesTreeprocessor` before `slidesTreeprocessor`:
+
+[source,javascript]
+----
+// ✓ Correct
+speakerNotesTreeprocessor.register(REGISTRY);
+slidesTreeprocessor.register(REGISTRY);
+
+// ✗ Wrong
+slidesTreeprocessor.register(REGISTRY);
+speakerNotesTreeprocessor.register(REGISTRY);
+----
+
+=== Template Organization
+
+* Keep templates in dedicated directories
+* Use descriptive template names
+* Document required slots in templates
+* Provide fallback content for optional slots
+
+=== Slot Usage
+
+* Use `slot=title` for slide headings
+* Use `slot=default` for main content
+* Use descriptive names for custom slots
+* Always provide content for required slots
+
+=== Performance
+
+* Template resolution caches can improve performance
+* Minimize file I/O by loading templates once
+* Keep templates simple and focused
+
+== Debugging
+
+=== Enable Debug Output
+
+Uncomment debug lines in `slides_treeprocessor.js`:
+
+[source,javascript]
+----
+console.log(JSON.stringify(debugAST(document), null, 2))
+----
+
+This outputs the complete AST structure after processing.
+
+=== Common Issues
+
+*Slides not appearing*::
+Check extension registration order
+
+*Template not found*::
+Verify template directory paths and file names
+
+*Content not in expected slot*::
+Check slot attribute syntax and template markers
+
+*Speaker notes showing in main view*::
+Ensure `speakerNotesTreeprocessor` is registered first
+

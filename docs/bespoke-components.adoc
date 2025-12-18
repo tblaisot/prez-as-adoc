@@ -1,0 +1,819 @@
+= Bespoke Components
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Overview
+
+The `bespoke/` directory contains the client-side presentation framework built on Bespoke.js. It includes plugins that add interactivity, assets for the speaker view, and comprehensive CSS styles for presentation rendering.
+
+== Directory Structure
+
+[source,text]
+----
+bespoke/
+├── assets/
+│   ├── bespoke-speaker.html    # Speaker view HTML
+│   ├── bespoke-speaker.css     # Speaker view styles
+│   ├── bespoke-speaker.js      # Speaker view script
+│   └── grid.svg                # Grid background SVG
+├── plugins/
+│   ├── index.js                # Plugin exports
+│   ├── bespoke-classes.js      # Class management (standard)
+│   ├── bespoke-classes-no-bespoke.js  # Class mgmt (no framework)
+│   ├── bespoke-scale.js        # Responsive slide scaling
+│   ├── bespoke-nav.js          # Navigation controls
+│   ├── bespoke-hash.js         # URL hash synchronization
+│   ├── bespoke-progress.js     # Progress indicator
+│   ├── bespoke-speaker.js      # Speaker notes & view
+│   ├── bespoke-view-mode.js    # View modes (full/list/grid)
+│   ├── bespoke-editor.js       # Live editing mode
+│   └── bespoke-debug.js        # Debug utilities
+└── styles/
+    ├── main.css                # Main stylesheet
+    ├── normalize.css           # CSS reset
+    ├── debug.css               # Debug mode styles
+    ├── blocks/
+    │   └── progress.css        # Progress bar styles
+    ├── bullets/
+    │   └── bullets.css         # Bullet point animations
+    ├── deck/
+    │   ├── deck.css            # Base deck styles
+    │   ├── deck-full.css       # Full screen mode
+    │   ├── deck-list.css       # List mode
+    │   ├── deck-grid.css       # Grid mode
+    │   ├── deck-editor.css     # Editor mode
+    │   ├── deck-print.css      # Print styles
+    │   └── deck-pointless.css  # Cursor hiding
+    └── slide/
+        ├── slide.css           # Base slide styles
+        ├── slide-full.css      # Slide in full mode
+        └── slide-list.css      # Slide in list mode
+----
+
+== Plugins
+
+All plugins follow the Bespoke.js plugin pattern: they are factory functions that return a function receiving the deck instance.
+
+=== plugins/index.js
+
+Exports all available plugins:
+
+[source,javascript]
+----
+export {scale} from './bespoke-scale.js';
+export {nav} from './bespoke-nav.js';
+export {speaker} from './bespoke-speaker.js';
+export {classes} from './bespoke-classes.js';
+export {progress} from './bespoke-progress.js';
+export {debug} from './bespoke-debug.js';
+export {editor} from './bespoke-editor.js';
+export {hash} from './bespoke-hash.js';
+export {viewMode} from './bespoke-view-mode.js';
+----
+
+=== bespoke-classes.js
+
+Manages CSS classes on slides based on their state.
+
+==== Features
+
+* Adds state classes: `active`, `inactive`, `past`, `future`
+* Tracks slide position relative to current
+* Enables CSS-based slide transitions
+
+==== Classes Applied
+
+`active`::
+Current slide being displayed
+
+`inactive`::
+All non-active slides
+
+`past`::
+Slides before the current slide
+
+`future`::
+Slides after the current slide
+
+`past-N` / `future-N`::
+Distance from current slide (e.g., `past-1`, `future-2`)
+
+==== Usage
+
+[source,javascript]
+----
+import { classes } from '@tblaisot/prez-as-adoc/bespoke/plugins';
+bespoke.from('.deck', [classes()]);
+----
+
+==== CSS Integration
+
+[source,css]
+----
+.slide {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide.past {
+    transform: translateX(-100%);
+}
+
+.slide.future {
+    transform: translateX(100%);
+}
+----
+
+=== bespoke-classes-no-bespoke.js
+
+Alternative implementation that doesn't rely on Bespoke.js events. Useful for custom implementations or non-Bespoke contexts.
+
+=== bespoke-scale.js
+
+Automatically scales slides to fit the viewport while maintaining aspect ratio.
+
+==== Features
+
+* Responsive scaling based on viewport size
+* Maintains aspect ratio
+* Supports custom slide dimensions
+* Handles window resize events
+
+==== Configuration
+
+[source,javascript]
+----
+scale({
+    width: 1024,   // Base width
+    height: 768    // Base height
+})
+----
+
+==== Implementation
+
+Uses CSS transforms to scale slides:
+
+[source,javascript]
+----
+slide.style.transform = `scale(${scaleFactor})`;
+slide.style.transformOrigin = 'center center';
+----
+
+==== Responsive Behavior
+
+* Calculates scale factor based on viewport dimensions
+* Updates on window resize
+* Ensures slides always fit within viewport
+* Preserves aspect ratio
+
+=== bespoke-nav.js
+
+Provides keyboard and mouse navigation controls.
+
+==== Features
+
+* Keyboard navigation
+* Mouse/touch click navigation
+* Arrow keys support
+* Home/End keys for first/last slide
+
+==== Keyboard Shortcuts
+
+|===
+| Key | Action
+
+| → / Space / Page Down
+| Next slide
+
+| ← / Page Up
+| Previous slide
+
+| Home
+| First slide
+
+| End
+| Last slide
+
+| Ctrl + →
+| Last slide
+
+| Ctrl + ←
+| First slide
+|===
+
+==== Click Navigation
+
+* Click right half of slide → next slide
+* Click left half of slide → previous slide
+
+==== Configuration
+
+[source,javascript]
+----
+nav({
+    useArrows: true,    // Enable arrow keys
+    useSpace: true,     // Enable space key
+    useClick: true      // Enable click navigation
+})
+----
+
+=== bespoke-hash.js
+
+Synchronizes current slide with URL hash for bookmarking and sharing.
+
+==== Features
+
+* Updates URL hash on slide change
+* Loads correct slide from URL hash on init
+* Enables deep linking to specific slides
+* Browser history integration
+
+==== Hash Format
+
+[source,text]
+----
+https://example.com/presentation.html#3
+                                    │
+                                    └─ Slide index (0-based)
+----
+
+==== Implementation
+
+[source,javascript]
+----
+// Update hash on slide change
+deck.on('activate', (event) => {
+    window.location.hash = event.index;
+});
+
+// Load slide from hash
+const slideIndex = parseInt(window.location.hash.substr(1));
+if (!isNaN(slideIndex)) {
+    deck.slide(slideIndex);
+}
+----
+
+=== bespoke-progress.js
+
+Displays a progress bar showing presentation progress.
+
+==== Features
+
+* Visual progress indicator
+* Updates in real-time
+* Customizable styling
+* Smooth animations
+
+==== HTML Structure
+
+[source,html]
+----
+<div class="bespoke-progress-parent">
+    <div class="bespoke-progress-bar"></div>
+</div>
+----
+
+==== Progress Calculation
+
+[source,javascript]
+----
+progress = (currentSlide + 1) / totalSlides * 100
+----
+
+==== Styling
+
+Styles are defined in `bespoke/styles/blocks/progress.css`:
+
+[source,css]
+----
+.bespoke-progress-parent {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: rgba(0,0,0,0.1);
+}
+
+.bespoke-progress-bar {
+    height: 100%;
+    background: #0066cc;
+    transition: width 0.3s ease;
+}
+----
+
+=== bespoke-speaker.js
+
+Provides speaker notes functionality with a separate speaker view window.
+
+==== Features
+
+* Opens separate speaker window (press `s`)
+* Shows current and next slide previews
+* Displays speaker notes for current slide
+* Bidirectional communication between windows
+* Synchronized navigation
+
+==== Architecture
+
+[source,text]
+----
+┌─────────────────────┐          PostMessage          ┌─────────────────────┐
+│  Main Presentation  │◄──────────────────────────────►│   Speaker Window    │
+│                     │                                │                     │
+│  - Full slides      │   Messages:                    │  - Slide previews   │
+│  - User navigation  │   - REGISTER                   │  - Speaker notes    │
+│  - Plugin controls  │   - UPDATE                     │  - Time tracking    │
+│                     │   - KEYDOWN                    │                     │
+└─────────────────────┘                                └─────────────────────┘
+----
+
+==== Usage
+
+[source,javascript]
+----
+speaker({
+    notes: 'prez-speaker-notes'  // CSS selector for notes
+})
+----
+
+==== Keyboard Shortcut
+
+* Press `s` to open speaker view
+
+==== Message Protocol
+
+Messages use JSON with namespace validation:
+
+[source,javascript]
+----
+{
+    namespace: "bespoke-speaker",
+    type: "REGISTER|UPDATE|KEYDOWN",
+    ...data
+}
+----
+
+==== Speaker View Components
+
+*Current Slide*::
+Large preview of currently displayed slide
+
+*Next Slide*::
+Preview of upcoming slide
+
+*Notes Panel*::
+Speaker notes for current slide
+
+*Time Display*::
+Elapsed time and current time
+
+==== Security
+
+* PostMessage with namespace validation
+* Origin checking (implied by browser security)
+* No sensitive data transmission
+
+=== bespoke-view-mode.js
+
+Provides multiple viewing modes for different contexts.
+
+==== View Modes
+
+`full` (default)::
+Standard presentation mode - one slide at a time
+
+`list`::
+List mode - all slides in vertical scrolling list
+
+`grid`::
+Grid mode - slide thumbnails in a grid layout
+
+==== Features
+
+* Keyboard shortcuts to switch modes
+* URL parameter support
+* Different layouts for each mode
+* Smooth transitions
+
+==== Keyboard Shortcuts
+
+|===
+| Key | Action
+
+| `g`
+| Toggle grid mode
+
+| `l`
+| Toggle list mode
+
+| `Esc`
+| Return to full mode
+|===
+
+==== URL Parameters
+
+[source,text]
+----
+?view=list   # Open in list mode
+?view=grid   # Open in grid mode
+----
+
+==== CSS Classes
+
+[source,css]
+----
+.deck-full   /* Full presentation mode */
+.deck-list   /* List view mode */
+.deck-grid   /* Grid view mode */
+----
+
+==== Use Cases
+
+*Full Mode*::
+Presenting to an audience
+
+*List Mode*::
+Quick review of all slides
+
+*Grid Mode*::
+Overview and navigation
+
+=== bespoke-editor.js
+
+Enables live editing of slide content during development.
+
+==== Features
+
+* Inline content editing
+* Double-click to edit
+* Real-time preview
+* Development tool only
+
+==== Activation
+
+[source,text]
+----
+?editor=true   # Enable editor mode
+----
+
+==== Usage
+
+. Add `?editor=true` to URL
+. Double-click slide content to edit
+. Changes are temporary (not saved)
+
+==== Security Note
+
+⚠️ Should only be enabled in development environments.
+
+=== bespoke-debug.js
+
+Provides debugging utilities for development.
+
+==== Features
+
+* Slide index display
+* Console logging of events
+* Visual debugging aids
+* Performance monitoring
+
+==== Activation
+
+[source,text]
+----
+?debug=true   # Enable debug mode
+----
+
+==== Debug Information
+
+* Current slide index
+* Deck events
+* Plugin initialization
+* Timing information
+
+== Assets
+
+=== bespoke-speaker.html
+
+Standalone HTML page for the speaker view window.
+
+==== Features
+
+* Slide previews (current and next)
+* Speaker notes display
+* Time tracking
+* Keyboard forwarding
+
+==== Structure
+
+[source,html]
+----
+<div class="speaker-layout">
+    <div class="slides-preview">
+        <div id="present"><!-- Current slide --></div>
+        <div id="future"><!-- Next slide --></div>
+    </div>
+    <div id="notes">
+        <div id="notes-content"><!-- Notes --></div>
+    </div>
+    <div class="timer">
+        <!-- Time display -->
+    </div>
+</div>
+----
+
+=== bespoke-speaker.css
+
+Styles for the speaker view.
+
+==== Layout
+
+* Two-column layout
+* Large current slide preview
+* Smaller next slide preview
+* Scrollable notes panel
+* Fixed timer
+
+=== bespoke-speaker.js
+
+JavaScript for speaker view functionality.
+
+==== Features
+
+* Registers with main window
+* Updates on slide changes
+* Forwards keyboard events
+* Manages timer
+
+==== Communication
+
+Sends `REGISTER` message on load, receives `UPDATE` messages.
+
+=== grid.svg
+
+SVG background for grid view mode.
+
+== Styles
+
+=== Style Organization
+
+Styles are organized hierarchically:
+
+. `normalize.css` - CSS reset
+. `main.css` - Imports all other styles
+. Component-specific styles in subdirectories
+
+=== main.css
+
+Main stylesheet that imports all others:
+
+[source,css]
+----
+@import './normalize.css';
+@import './deck/deck.css';
+@import './slide/slide.css';
+@import './blocks/progress.css';
+@import './bullets/bullets.css';
+/* ... */
+----
+
+=== Deck Styles
+
+==== deck.css
+
+Base styles for the presentation deck:
+
+* Full viewport sizing
+* Overflow handling
+* Base positioning
+
+==== deck-full.css
+
+Styles for full presentation mode:
+
+* Single slide display
+* Centered positioning
+* Transition effects
+
+==== deck-list.css
+
+Styles for list mode:
+
+* Vertical layout
+* All slides visible
+* Scrollable container
+
+==== deck-grid.css
+
+Styles for grid mode:
+
+* CSS Grid layout
+* Thumbnail sizing
+* Hover effects
+
+==== deck-editor.css
+
+Styles for editor mode:
+
+* Editable indicators
+* Focus styles
+* Edit controls
+
+==== deck-print.css
+
+Print-specific styles:
+
+* Page breaks between slides
+* Remove interactive elements
+* Black and white optimizations
+
+==== deck-pointless.css
+
+Hides cursor after inactivity:
+
+[source,css]
+----
+.deck-pointless * {
+    cursor: none !important;
+}
+----
+
+=== Slide Styles
+
+==== slide.css
+
+Base slide styles:
+
+* Default dimensions
+* Typography
+* Content spacing
+
+==== slide-full.css
+
+Slide styles in full mode:
+
+* Absolute positioning
+* Z-index management
+* Transitions
+
+==== slide-list.css
+
+Slide styles in list mode:
+
+* Border and spacing
+* Smaller scale
+* Shadow effects
+
+=== Component Styles
+
+==== blocks/progress.css
+
+Progress bar component styles.
+
+==== bullets/bullets.css
+
+Animated bullet point reveals:
+
+[source,css]
+----
+.bullet {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.bullet.bespoke-bullet-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.3s ease;
+}
+----
+
+==== debug.css
+
+Debug mode visual aids:
+
+* Slide boundaries
+* Index overlays
+* Grid guidelines
+
+== Usage Example
+
+=== Complete Setup
+
+[source,javascript]
+----
+import bespoke from 'bespoke';
+import {
+    classes,
+    scale,
+    nav,
+    hash,
+    progress,
+    speaker,
+    viewMode,
+    debug
+} from '@tblaisot/prez-as-adoc/bespoke/plugins';
+
+import '@tblaisot/prez-as-adoc/bespoke/styles/main.css';
+
+const deck = bespoke.from('.deck', [
+    classes(),
+    scale({ width: 1024, height: 768 }),
+    nav(),
+    hash(),
+    progress(),
+    speaker({ notes: '.prez-speaker-notes' }),
+    viewMode(),
+    debug()
+]);
+----
+
+=== Plugin Ordering
+
+Some plugins should be loaded in specific order:
+
+. `classes` - Should be early for state management
+. `scale` - Before plugins that need dimensions
+. `nav` - Core navigation
+. `hash` - After nav for proper sync
+. `progress` - Can be anywhere
+. `speaker` - Can be anywhere
+. `viewMode` - Late for mode switching
+. `debug` - Last for complete debugging
+
+== Customization
+
+=== Custom Plugin
+
+[source,javascript]
+----
+export function myPlugin(options = {}) {
+    return function(deck) {
+        deck.on('activate', (event) => {
+            console.log('Slide', event.index);
+        });
+        
+        deck.addKeyHandler('m', () => {
+            console.log('Custom action');
+        });
+    };
+}
+----
+
+=== Custom Styles
+
+Override default styles by loading your CSS after the main styles:
+
+[source,javascript]
+----
+import '@tblaisot/prez-as-adoc/bespoke/styles/main.css';
+import './my-custom-styles.css';
+----
+
+=== Theme Development
+
+Create a complete theme:
+
+. Base variables
+. Deck styles
+. Slide styles
+. Component styles
+. View mode adaptations
+
+== Best Practices
+
+=== Performance
+
+* Minimize DOM manipulation
+* Use CSS transforms for animations
+* Debounce resize handlers
+* Use event delegation
+
+=== Accessibility
+
+* Ensure keyboard navigation works
+* Provide ARIA labels
+* Support screen readers
+* Maintain focus management
+
+=== Compatibility
+
+* Test in major browsers
+* Provide fallbacks
+* Progressive enhancement
+* Graceful degradation
+
+=== Development
+
+* Use debug mode during development
+* Test all view modes
+* Verify speaker view functionality
+* Check responsive behavior
+

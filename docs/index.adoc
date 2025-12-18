@@ -1,0 +1,142 @@
+= prez-as-adoc Documentation
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Overview
+
+*prez-as-adoc* is a powerful tool for creating modern, interactive slide presentations from AsciiDoc documents. It combines the simplicity of AsciiDoc markup with the dynamic capabilities of the Bespoke.js presentation framework.
+
+=== Key Features
+
+* *AsciiDoc-based*: Write presentations in clean, semantic AsciiDoc markup
+* *Template Support*: Use custom slide templates (layouts) for consistent styling
+* *Speaker Notes*: Built-in support for presenter notes with dedicated speaker view
+* *Flexible Usage*: Available as both CLI tool and Vite plugin
+* *Hot Reload*: Automatic reloading during development (with Vite plugin)
+* *Modern Presentation Features*:
+** Navigation controls
+** Progress indicator
+** Keyboard shortcuts
+** Grid/overview mode
+** Speaker view window
+** Hash-based URLs for sharing specific slides
+
+== Quick Start
+
+=== Installation
+
+[source,bash]
+----
+npm install @tblaisot/prez-as-adoc
+----
+
+=== Usage as CLI
+
+[source,bash]
+----
+prez-as-adoc \
+  --base_dir=./src \
+  --to_dir=./dist \
+  --slides-templates=./slide-templates \
+  ./src/index.adoc
+----
+
+=== Usage as Vite Plugin
+
+.vite.config.js
+[source,javascript]
+----
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+    plugins: [
+        prezAsAdoc({ 
+            slidesTemplates: ['./slide-templates'] 
+        })
+    ]
+})
+----
+
+== Documentation Structure
+
+This documentation is organized into several sections:
+
+* xref:architecture.adoc[Architecture Overview] - High-level system design and data flow
+* xref:asciidoctor-components.adoc[AsciiDoctor Components] - Extensions and templates
+* xref:bespoke-components.adoc[Bespoke Components] - Presentation framework plugins
+* xref:vite-integration.adoc[Vite Integration] - Development tooling
+* xref:usage-guide.adoc[Usage Guide] - Detailed usage examples
+* xref:api-reference.adoc[API Reference] - Complete API documentation
+
+== Project Structure
+
+[source,text]
+----
+prez-as-adoc/
+├── asciidoctor/          # AsciiDoc processing components
+│   ├── extensions/       # Custom AsciiDoc extensions
+│   └── templates/        # HTML generation templates
+├── bespoke/              # Bespoke.js presentation framework
+│   ├── assets/           # Static assets (speaker view, etc.)
+│   ├── plugins/          # Bespoke.js plugins
+│   └── styles/           # CSS styles for presentations
+├── bin/                  # CLI entry point
+├── vite/                 # Vite plugin integration
+│   └── plugins/          # Vite-specific plugins
+└── docs/                 # Documentation (this folder)
+----
+
+== Core Concepts
+
+=== Slide Generation
+
+The tool processes AsciiDoc documents through several transformation stages:
+
+. *Parse*: AsciiDoc content is parsed into an Abstract Syntax Tree (AST)
+. *Transform*: Custom tree processors convert sections into slides
+. *Template*: Slide templates render the final HTML structure
+. *Enhance*: Bespoke.js plugins add interactivity
+
+=== Slide Templates
+
+Templates allow you to create different slide layouts (title slide, content slide, two-column, etc.). Templates are HTML files with special slot markers where content is inserted.
+
+.Example template
+[source,html]
+----
+<div class="slide-content">
+    <!-- slot=title -->
+    <div class="content">
+        <!-- slot=default -->
+    </div>
+</div>
+----
+
+=== Speaker Notes
+
+Special blocks in your AsciiDoc are converted to speaker notes, visible only in the speaker view window (press `s` during presentation).
+
+== Technology Stack
+
+* *AsciiDoctor.js*: AsciiDoc parsing and conversion
+* *Bespoke.js*: Presentation framework
+* *Vite*: Development server and build tool
+* *Node.js*: Runtime environment
+
+== License
+
+ISC
+
+== Contributing
+
+Contributions are welcome! Please refer to the project repository for contribution guidelines.
+
+== See Also
+
+* link:https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/[AsciiDoc Syntax Quick Reference]
+* link:https://github.com/bespokejs/bespoke[Bespoke.js Documentation]
+* link:https://vitejs.dev/[Vite Documentation]
+

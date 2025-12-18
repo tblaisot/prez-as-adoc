@@ -1,0 +1,699 @@
+= Vite Integration
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Overview
+
+The `vite/` directory contains integration code for using prez-as-adoc as a Vite plugin. This enables a modern development workflow with hot module replacement, fast builds, and seamless AsciiDoc processing.
+
+== Directory Structure
+
+[source,text]
+----
+vite/
+└── plugins/
+    ├── index.js                # Plugin exports
+    ├── prez-as-adoc-plugin.js  # Main Vite plugin
+    └── debug.js                # Debug utilities
+----
+
+== Why Vite?
+
+Vite provides several advantages for presentation development:
+
+* *Lightning-fast HMR*: See changes instantly
+* *Modern ES modules*: No bundler during development
+* *Optimized builds*: Production-ready output
+* *Plugin ecosystem*: Extensible architecture
+* *TypeScript support*: Optional type safety
+
+== Vite Plugin Architecture
+
+=== Plugin Lifecycle
+
+[source,text]
+----
+┌─────────────────────────────────────────┐
+│  Vite Dev Server Start                  │
+└────────────────┬────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────┐
+│  1. Plugin Configuration                │
+│     - Parse options                     │
+│     - Setup extensions                  │
+│     - Configure paths                   │
+└────────────────┬────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────┐
+│  2. HTML Transform Hook                 │
+│     - Triggered on index.html request   │
+│     - Reads data-adoc attribute         │
+│     - Converts AsciiDoc → HTML          │
+│     - Injects into HTML template        │
+└────────────────┬────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────┐
+│  3. Hot Update Hook                     │
+│     - Watches .adoc files               │
+│     - Triggers full reload on change    │
+└────────────────┬────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────┐
+│  Development Server Running             │
+│  - Serve HTML with slides               │
+│  - Watch for file changes               │
+│  - Hot reload on .adoc updates          │
+└─────────────────────────────────────────┘
+----
+
+== plugins/prez-as-adoc-plugin.js
+
+The main Vite plugin that integrates AsciiDoc processing into Vite's build pipeline.
+
+=== Plugin Structure
+
+[source,javascript]
+----
+export const prezAsAdoc = (options) => {
+    return {
+        name: 'prez-as-adoc',
+        transformIndexHtml: (html, ctx) => { /* ... */ },
+        handleHotUpdate: ({ server, file }) => { /* ... */ },
+        enforce: 'pre'
+    }
+}
+----
+
+=== Configuration Options
+
+==== slidesTemplates
+
+Array of paths to directories containing slide template HTML files.
+
+[source,javascript]
+----
+prezAsAdoc({
+    slidesTemplates: [
+        './slide-templates',
+        './custom-layouts'
+    ]
+})
+----
+
+Templates are searched in order, using the first match found.
+
+==== asciidoctorTemplatesOverloads
+
+Array of paths to directories containing custom AsciiDoctor template overrides.
+
+[source,javascript]
+----
+prezAsAdoc({
+    asciidoctorTemplatesOverloads: [
+        './custom-templates'
+    ]
+})
+----
+
+Allows overriding built-in templates like `slide.js`, `title.js`, etc.
+
+==== baseDir
+
+Base directory for AsciiDoc file resolution (default: `'./src'`).
+
+[source,javascript]
+----
+prezAsAdoc({
+    baseDir: './presentations'
+})
+----
+
+==== toDir
+
+Output directory for converted files (default: `'./dist'`).
+
+[source,javascript]
+----
+prezAsAdoc({
+    toDir: './build'
+})
+----
+
+=== HTML Transformation Hook
+
+==== Purpose
+
+Transforms `index.html` by converting referenced AsciiDoc files and injecting the output.
+
+==== Process
+
+. *Detect HTML file*: Filter for `index.html`
+. *Parse HTML*: Use `node-html-parser` to parse the HTML
+. *Find AsciiDoc source*: Read `data-adoc` attribute from `<html>` tag
+. *Configure AsciiDoctor*: Setup extensions and templates
+. *Convert AsciiDoc*: Load and convert the `.adoc` file
+. *Inject metadata*: Add title, meta tags, and attributes
+. *Inject content*: Replace marker element with generated slides
+. *Return HTML*: Return modified HTML string
+
+==== HTML Template
+
+Your `index.html` should have this structure:
+
+[source,html]
+----
+<!DOCTYPE html>
+<html lang="en" data-adoc="./presentation.adoc">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title and meta tags will be injected -->
+</head>
+<body>
+    <div data-adoc-insert-here></div>
+    <!-- Content will be inserted here -->
+    
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
+----
+
+==== Key Attributes
+
+`data-adoc` on `<html>`::
+Path to AsciiDoc source file (relative to baseDir)
+
+`data-adoc-insert-here` on element::
+Marker where slide content will be inserted
+
+==== Metadata Injection
+
+The plugin automatically injects document metadata:
+
+*Title*::
+From `:doctitle:` or first heading
+
+*Meta tags*::
+- `application-name` from `:app-name:`
+- `author` from `:author:` / `:authors:`
+- `copyright` from `:copyright:`
+- `description` from `:description:`
+- `keywords` from `:keywords:`
+- `generator` (Asciidoctor version)
+
+*Favicon*::
+From `:favicon:` attribute
+
+*Body attributes*::
+- `id` from document ID
+- `class` from `:doctype:` and `:docrole:`
+
+=== Hot Update Hook
+
+==== Purpose
+
+Provides fast feedback during development by reloading when AsciiDoc files change.
+
+==== Implementation
+
+[source,javascript]
+----
+async handleHotUpdate({ server, file }) {
+    if (filterIndexAdoc(file)) {
+        server.ws.send({
+            type: 'full-reload',
+        });
+        return [];
+    }
+}
+----
+
+==== Behavior
+
+* Watches for changes to `.adoc` files
+* Triggers full page reload (not HMR)
+* Ensures latest content is displayed
+
+==== Why Full Reload?
+
+AsciiDoc conversion generates complete HTML structure, making fine-grained HMR complex. Full reload is fast and reliable.
+
+=== Plugin Enforcement
+
+[source,javascript]
+----
+enforce: 'pre'
+----
+
+The plugin runs *before* other plugins to ensure HTML transformation happens early in the pipeline.
+
+== plugins/index.js
+
+Export module for the plugin:
+
+[source,javascript]
+----
+export { prezAsAdoc } from './prez-as-adoc-plugin.js';
+----
+
+This provides the public API for importing the plugin.
+
+== plugins/debug.js
+
+Debug utilities for development (implementation details may vary).
+
+== Usage Examples
+
+=== Basic Setup
+
+.vite.config.js
+[source,javascript]
+----
+import { defineConfig } from 'vite';
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+export default defineConfig({
+    plugins: [
+        prezAsAdoc()
+    ]
+});
+----
+
+.index.html
+[source,html]
+----
+<!DOCTYPE html>
+<html data-adoc="./index.adoc">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div data-adoc-insert-here></div>
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
+----
+
+.main.js
+[source,javascript]
+----
+import bespoke from 'bespoke';
+import { classes, nav, hash } from '@tblaisot/prez-as-adoc/bespoke/plugins';
+import '@tblaisot/prez-as-adoc/bespoke/styles/main.css';
+
+bespoke.from('.deck', [classes(), nav(), hash()]);
+----
+
+.index.adoc
+[source,asciidoc]
+----
+= My Presentation
+:author: John Doe
+
+== First Slide
+
+Content here.
+----
+
+=== With Custom Templates
+
+.vite.config.js
+[source,javascript]
+----
+import { defineConfig } from 'vite';
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+export default defineConfig({
+    plugins: [
+        prezAsAdoc({
+            slidesTemplates: ['./templates/slides']
+        })
+    ]
+});
+----
+
+.templates/slides/hero-slide.html
+[source,html]
+----
+<div class="hero-layout">
+    <div class="hero-title">
+        <!-- slot=title -->
+    </div>
+    <div class="hero-content">
+        <!-- slot=default -->
+    </div>
+</div>
+----
+
+.index.adoc
+[source,asciidoc]
+----
+= My Presentation
+
+[slide-template="hero"]
+== Hero Slide
+
+Amazing content!
+----
+
+=== Multiple Presentations
+
+Handle multiple presentations in one project:
+
+.vite.config.js
+[source,javascript]
+----
+import { defineConfig } from 'vite';
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+export default defineConfig({
+    plugins: [
+        prezAsAdoc({
+            slidesTemplates: ['./templates']
+        })
+    ],
+    build: {
+        rollupOptions: {
+            input: {
+                main: './index.html',
+                workshop: './workshop.html'
+            }
+        }
+    }
+});
+----
+
+.workshop.html
+[source,html]
+----
+<html data-adoc="./workshop.adoc">
+<!-- ... -->
+</html>
+----
+
+=== Custom Base Directory
+
+.vite.config.js
+[source,javascript]
+----
+export default defineConfig({
+    plugins: [
+        prezAsAdoc({
+            baseDir: './presentations',
+            toDir: './build'
+        })
+    ]
+});
+----
+
+.index.html
+[source,html]
+----
+<!-- Will resolve to ./presentations/my-talk.adoc -->
+<html data-adoc="./my-talk.adoc">
+----
+
+== Development Workflow
+
+=== Start Dev Server
+
+[source,bash]
+----
+npm run dev
+# or
+vite
+----
+
+=== Development Features
+
+* *Instant feedback*: See changes on save
+* *Error reporting*: AsciiDoc errors shown in browser
+* *Source maps*: Debug original AsciiDoc
+* *Fast startup*: No bundling step
+
+=== File Watching
+
+The plugin watches:
+
+* `.adoc` files → Full reload
+* `.js` files → HMR
+* `.css` files → HMR
+* Template files → Full reload (if configured)
+
+== Production Build
+
+=== Build Command
+
+[source,bash]
+----
+npm run build
+# or
+vite build
+----
+
+=== Build Output
+
+. AsciiDoc converted to HTML
+. JavaScript bundled and minified
+. CSS processed and optimized
+. Assets copied and hashed
+. Output to `dist/` directory
+
+=== Build Optimization
+
+Vite automatically:
+
+* Minifies HTML, CSS, and JavaScript
+* Splits code for optimal loading
+* Generates asset hashes for caching
+* Creates optimized bundles
+
+=== Build Configuration
+
+.vite.config.js
+[source,javascript]
+----
+export default defineConfig({
+    plugins: [prezAsAdoc()],
+    build: {
+        outDir: 'dist',
+        assetsDir: 'assets',
+        sourcemap: false,
+        minify: 'terser'
+    }
+});
+----
+
+== Preview Production Build
+
+Test the production build locally:
+
+[source,bash]
+----
+npm run build
+npm run preview
+# or
+vite build && vite preview
+----
+
+== Troubleshooting
+
+=== Common Issues
+
+==== Plugin Not Running
+
+*Problem*: HTML not transformed
+
+*Solution*: Ensure `data-adoc` attribute is present on `<html>` tag
+
+==== AsciiDoc File Not Found
+
+*Problem*: Error loading .adoc file
+
+*Solutions*:
+* Check file path in `data-adoc` attribute
+* Verify `baseDir` configuration
+* Use path relative to `baseDir`
+
+==== Templates Not Found
+
+*Problem*: Template resolution fails
+
+*Solutions*:
+* Check `slidesTemplates` paths
+* Verify template file naming: `{name}-slide.html`
+* Use absolute paths or paths relative to project root
+
+==== Hot Reload Not Working
+
+*Problem*: Changes not reflected
+
+*Solutions*:
+* Check console for errors
+* Verify file is watched by Vite
+* Try full page refresh
+* Restart dev server
+
+==== Build Errors
+
+*Problem*: Build fails
+
+*Solutions*:
+* Check AsciiDoc syntax
+* Verify all paths are correct
+* Review Vite configuration
+* Check for conflicting plugins
+
+=== Debug Mode
+
+Enable verbose logging:
+
+[source,javascript]
+----
+export default defineConfig({
+    plugins: [prezAsAdoc()],
+    logLevel: 'info'
+});
+----
+
+Check console for transformation logs:
+
+[source,text]
+----
+>>>>> transformIndexHtml /path/to/index.html
+----
+
+== Advanced Configuration
+
+=== Custom Transform
+
+Extend the plugin with custom transformations:
+
+[source,javascript]
+----
+export default defineConfig({
+    plugins: [
+        prezAsAdoc(),
+        {
+            name: 'custom-transform',
+            transformIndexHtml(html) {
+                return html.replace(/CUSTOM_TOKEN/g, 'value');
+            }
+        }
+    ]
+});
+----
+
+=== Integration with Other Plugins
+
+Combine with other Vite plugins:
+
+[source,javascript]
+----
+import { defineConfig } from 'vite';
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+import vue from '@vitejs/plugin-vue';
+
+export default defineConfig({
+    plugins: [
+        prezAsAdoc(),
+        vue()  // Add Vue support
+    ]
+});
+----
+
+=== Environment Variables
+
+Use environment variables in configuration:
+
+[source,javascript]
+----
+export default defineConfig(({ mode }) => {
+    return {
+        plugins: [
+            prezAsAdoc({
+                baseDir: mode === 'production' ? './dist-src' : './src'
+            })
+        ]
+    };
+});
+----
+
+== Best Practices
+
+=== Project Organization
+
+[source,text]
+----
+project/
+├── src/
+│   ├── presentations/       # AsciiDoc sources
+│   │   ├── index.adoc
+│   │   └── workshop.adoc
+│   ├── templates/           # Slide templates
+│   │   └── hero-slide.html
+│   └── main.js             # Application entry
+├── public/                  # Static assets
+├── index.html              # HTML template
+└── vite.config.js          # Vite configuration
+----
+
+=== Performance Tips
+
+* Keep AsciiDoc files modular
+* Use include directives for reusability
+* Optimize images before including
+* Minimize template complexity
+
+=== Development Tips
+
+* Use consistent naming conventions
+* Document custom templates
+* Version control all source files
+* Test builds before deployment
+
+== Comparison: CLI vs Vite Plugin
+
+|===
+| Feature | CLI | Vite Plugin
+
+| Development speed
+| Slow (rebuild each time)
+| Fast (instant HMR)
+
+| Build integration
+| Manual
+| Automatic
+
+| File watching
+| External tool needed
+| Built-in
+
+| Asset handling
+| Manual
+| Automatic (Vite)
+
+| Production optimization
+| Manual
+| Automatic (Vite)
+
+| Setup complexity
+| Simple
+| Moderate
+
+| Best for
+| Simple builds, CI/CD
+| Active development
+
+|===
+
+== Conclusion
+
+The Vite integration provides a modern, efficient development experience for creating presentations with prez-as-adoc. It combines the simplicity of AsciiDoc with the power of modern build tools, enabling rapid iteration and professional production builds.
+

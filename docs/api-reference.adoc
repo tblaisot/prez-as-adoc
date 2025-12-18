@@ -1,0 +1,1023 @@
+= API Reference
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Overview
+
+This document provides a complete reference for all APIs, configuration options, and interfaces in *prez-as-adoc*.
+
+== CLI API
+
+=== Command Syntax
+
+[source,bash]
+----
+prez-as-adoc [options] <input-file>
+----
+
+=== Options
+
+`--slides-templates`::
+*Type*: `Array<String>` +
+*Required*: No +
+*Description*: Paths to directories containing slide template HTML files +
+*Example*: `--slides-templates=./templates --slides-templates=./more-templates`
+
+`--asciidoctor-templates-overloads`::
+*Type*: `Array<String>` +
+*Required*: No +
+*Description*: Paths to directories containing AsciiDoctor template overrides +
+*Example*: `--asciidoctor-templates-overloads=./custom-templates`
+
+`--base_dir`::
+*Type*: `String` +
+*Required*: No +
+*Default*: `'./src'` +
+*Description*: Base directory for resolving AsciiDoc file paths +
+*Example*: `--base_dir=./presentations`
+
+`--to_dir`::
+*Type*: `String` +
+*Required*: No +
+*Default*: `'./dist'` +
+*Description*: Output directory for generated HTML +
+*Example*: `--to_dir=./build`
+
+=== Arguments
+
+`<input-file>`::
+*Type*: `String` +
+*Required*: Yes +
+*Description*: Path to the AsciiDoc source file +
+*Example*: `./src/presentation.adoc`
+
+=== Examples
+
+.Basic usage
+[source,bash]
+----
+prez-as-adoc presentation.adoc
+----
+
+.With custom templates
+[source,bash]
+----
+prez-as-adoc --slides-templates=./templates presentation.adoc
+----
+
+.Full configuration
+[source,bash]
+----
+prez-as-adoc \
+  --base_dir=./src \
+  --to_dir=./dist \
+  --slides-templates=./templates \
+  --asciidoctor-templates-overloads=./custom-templates \
+  ./src/index.adoc
+----
+
+== Vite Plugin API
+
+=== Import
+
+[source,javascript]
+----
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+----
+
+=== Function Signature
+
+[source,typescript]
+----
+function prezAsAdoc(options?: PrezAsAdocOptions): Plugin
+----
+
+=== Configuration Options
+
+[source,typescript]
+----
+interface PrezAsAdocOptions {
+    slidesTemplates?: string[];
+    asciidoctorTemplatesOverloads?: string[];
+    baseDir?: string;
+    toDir?: string;
+}
+----
+
+==== slidesTemplates
+
+*Type*: `string[]` +
+*Required*: No +
+*Default*: `[]` +
+*Description*: Array of paths to directories containing slide template HTML files
+
+Templates should be named `{template-name}-slide.html`.
+
+.Example
+[source,javascript]
+----
+prezAsAdoc({
+    slidesTemplates: ['./templates', './shared-templates']
+})
+----
+
+==== asciidoctorTemplatesOverloads
+
+*Type*: `string[]` +
+*Required*: No +
+*Default*: `[]` +
+*Description*: Array of paths to directories containing custom AsciiDoctor template overrides
+
+.Example
+[source,javascript]
+----
+prezAsAdoc({
+    asciidoctorTemplatesOverloads: ['./custom-templates']
+})
+----
+
+==== baseDir
+
+*Type*: `string` +
+*Required*: No +
+*Default*: `'./src'` +
+*Description*: Base directory for resolving AsciiDoc file paths
+
+.Example
+[source,javascript]
+----
+prezAsAdoc({
+    baseDir: './presentations'
+})
+----
+
+==== toDir
+
+*Type*: `string` +
+*Required*: No +
+*Default*: `'./dist'` +
+*Description*: Output directory for generated files
+
+.Example
+[source,javascript]
+----
+prezAsAdoc({
+    toDir: './build'
+})
+----
+
+=== Complete Example
+
+[source,javascript]
+----
+import { defineConfig } from 'vite';
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+export default defineConfig({
+    plugins: [
+        prezAsAdoc({
+            slidesTemplates: ['./templates'],
+            asciidoctorTemplatesOverloads: ['./custom-templates'],
+            baseDir: './src',
+            toDir: './dist'
+        })
+    ]
+});
+----
+
+== Bespoke Plugins API
+
+All plugins follow the Bespoke.js plugin pattern.
+
+=== Import
+
+[source,javascript]
+----
+import {
+    classes,
+    scale,
+    nav,
+    hash,
+    progress,
+    speaker,
+    viewMode,
+    editor,
+    debug
+} from '@tblaisot/prez-as-adoc/bespoke/plugins';
+----
+
+=== classes()
+
+Manages CSS classes on slides based on state.
+
+==== Signature
+
+[source,typescript]
+----
+function classes(): BespokePlugin
+----
+
+==== Parameters
+
+None
+
+==== Applied Classes
+
+* `active` - Current slide
+* `inactive` - Non-active slides
+* `past` - Slides before current
+* `future` - Slides after current
+* `past-N` - Distance before current (e.g., `past-1`, `past-2`)
+* `future-N` - Distance after current (e.g., `future-1`, `future-2`)
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    classes()
+]);
+----
+
+=== scale()
+
+Scales slides to fit the viewport.
+
+==== Signature
+
+[source,typescript]
+----
+function scale(options?: ScaleOptions): BespokePlugin
+
+interface ScaleOptions {
+    width?: number;   // Base width in pixels
+    height?: number;  // Base height in pixels
+}
+----
+
+==== Parameters
+
+`width`::
+*Type*: `number` +
+*Default*: `1024` +
+*Description*: Base slide width in pixels
+
+`height`::
+*Type*: `number` +
+*Default*: `768` +
+*Description*: Base slide height in pixels
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    scale({ width: 1920, height: 1080 })
+]);
+----
+
+=== nav()
+
+Provides keyboard and mouse navigation.
+
+==== Signature
+
+[source,typescript]
+----
+function nav(options?: NavOptions): BespokePlugin
+
+interface NavOptions {
+    useArrows?: boolean;
+    useSpace?: boolean;
+    useClick?: boolean;
+}
+----
+
+==== Parameters
+
+`useArrows`::
+*Type*: `boolean` +
+*Default*: `true` +
+*Description*: Enable arrow key navigation
+
+`useSpace`::
+*Type*: `boolean` +
+*Default*: `true` +
+*Description*: Enable space bar navigation
+
+`useClick`::
+*Type*: `boolean` +
+*Default*: `true` +
+*Description*: Enable click navigation
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    nav({
+        useArrows: true,
+        useSpace: true,
+        useClick: false  // Disable click navigation
+    })
+]);
+----
+
+=== hash()
+
+Synchronizes current slide with URL hash.
+
+==== Signature
+
+[source,typescript]
+----
+function hash(): BespokePlugin
+----
+
+==== Parameters
+
+None
+
+==== Behavior
+
+* Updates `window.location.hash` on slide change
+* Loads slide from hash on initialization
+* Format: `#<slide-index>` (0-based)
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    hash()
+]);
+
+// Navigate directly to slide 5
+window.location.hash = '5';
+----
+
+=== progress()
+
+Displays a progress bar.
+
+==== Signature
+
+[source,typescript]
+----
+function progress(options?: ProgressOptions): BespokePlugin
+
+interface ProgressOptions {
+    container?: HTMLElement | string;
+}
+----
+
+==== Parameters
+
+`container`::
+*Type*: `HTMLElement | string` +
+*Default*: Creates new element +
+*Description*: Container element or selector for progress bar
+
+==== Generated HTML
+
+[source,html]
+----
+<div class="bespoke-progress-parent">
+    <div class="bespoke-progress-bar"></div>
+</div>
+----
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    progress()
+]);
+
+// Or with custom container
+bespoke.from('.deck', [
+    progress({ container: '#my-progress' })
+]);
+----
+
+=== speaker()
+
+Provides speaker notes and speaker view.
+
+==== Signature
+
+[source,typescript]
+----
+function speaker(options?: SpeakerOptions): BespokePlugin
+
+interface SpeakerOptions {
+    notes?: string;  // CSS selector for notes elements
+}
+----
+
+==== Parameters
+
+`notes`::
+*Type*: `string` +
+*Default*: `'prez-speaker-notes'` +
+*Description*: CSS selector for speaker notes elements
+
+==== Keyboard Shortcut
+
+* `s` - Open speaker view window
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    speaker({ notes: '.prez-speaker-notes' })
+]);
+----
+
+=== viewMode()
+
+Provides multiple viewing modes.
+
+==== Signature
+
+[source,typescript]
+----
+function viewMode(options?: ViewModeOptions): BespokePlugin
+
+interface ViewModeOptions {
+    defaultMode?: 'full' | 'list' | 'grid';
+}
+----
+
+==== Parameters
+
+`defaultMode`::
+*Type*: `'full' | 'list' | 'grid'` +
+*Default*: `'full'` +
+*Description*: Initial view mode
+
+==== View Modes
+
+`full`::
+Standard presentation mode - one slide at a time
+
+`list`::
+All slides in vertical scrolling list
+
+`grid`::
+Slide thumbnails in grid layout
+
+==== Keyboard Shortcuts
+
+* `g` - Toggle grid mode
+* `l` - Toggle list mode
+* `Esc` - Return to full mode
+
+==== URL Parameters
+
+* `?view=list` - Open in list mode
+* `?view=grid` - Open in grid mode
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    viewMode({ defaultMode: 'full' })
+]);
+----
+
+=== editor()
+
+Enables live editing during development.
+
+==== Signature
+
+[source,typescript]
+----
+function editor(): BespokePlugin
+----
+
+==== Parameters
+
+None
+
+==== Activation
+
+Add `?editor=true` to URL
+
+==== Usage
+
+Double-click slide content to edit inline
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    editor()
+]);
+
+// Visit: http://localhost:5173/?editor=true
+----
+
+=== debug()
+
+Provides debugging utilities.
+
+==== Signature
+
+[source,typescript]
+----
+function debug(): BespokePlugin
+----
+
+==== Parameters
+
+None
+
+==== Activation
+
+Add `?debug=true` to URL
+
+==== Features
+
+* Logs deck events to console
+* Displays slide indices
+* Shows plugin information
+
+==== Example
+
+[source,javascript]
+----
+bespoke.from('.deck', [
+    debug()
+]);
+
+// Visit: http://localhost:5173/?debug=true
+----
+
+== AsciiDoc Attributes
+
+Document attributes that control presentation behavior.
+
+=== Slide Template Attributes
+
+`slide-template-dirs`::
+*Type*: `Array<String>` +
+*Description*: Paths to slide template directories +
+*Set by*: Plugin configuration
+
+`slide-template-attr`::
+*Type*: `String` +
+*Default*: `'slide-template'` +
+*Description*: Name of attribute used to specify templates
+
+`slide-default-template`::
+*Type*: `String` +
+*Default*: `''` (empty) +
+*Description*: Default template when none specified
+
+=== Document Metadata Attributes
+
+`:doctitle:`::
+Document title (appears in title slide and `<title>` tag)
+
+`:author:` / `:authors:`::
+Author name(s) (added to `<meta name="author">`)
+
+`:email:`::
+Author email
+
+`:revdate:`::
+Revision date
+
+`:description:`::
+Presentation description (added to `<meta name="description">`)
+
+`:keywords:`::
+Keywords for SEO (added to `<meta name="keywords">`)
+
+`:app-name:`::
+Application name (added to `<meta name="application-name">`)
+
+`:copyright:`::
+Copyright notice (added to `<meta name="copyright">`)
+
+`:favicon:`::
+Path to favicon file
+
+=== Display Attributes
+
+`:nolang:`::
+Omit `lang` attribute from `<html>` tag
+
+`:lang:`::
+*Default*: `'en'` +
+Language code for presentation
+
+`:doctype:`::
+*Default*: `'article'` +
+Document type (affects CSS classes)
+
+`:docrole:` / `:role:`::
+Custom role classes for document
+
+== Deck Instance API
+
+When you initialize Bespoke, you get a deck instance with methods and events.
+
+=== Methods
+
+==== slide()
+
+Get or set the current slide index.
+
+[source,javascript]
+----
+// Get current slide
+const currentIndex = deck.slide();
+
+// Go to specific slide (0-based)
+deck.slide(5);
+----
+
+==== next()
+
+Navigate to next slide.
+
+[source,javascript]
+----
+deck.next();
+----
+
+==== prev()
+
+Navigate to previous slide.
+
+[source,javascript]
+----
+deck.prev();
+----
+
+==== addKeyHandler()
+
+Add custom keyboard handler.
+
+[source,javascript]
+----
+deck.addKeyHandler(key, handler);
+
+// Example
+deck.addKeyHandler('h', () => {
+    console.log('H key pressed');
+});
+----
+
+==== on()
+
+Listen to deck events.
+
+[source,javascript]
+----
+deck.on(eventName, handler);
+
+// Example
+deck.on('activate', (event) => {
+    console.log('Activated slide', event.index);
+});
+----
+
+==== off()
+
+Remove event listener.
+
+[source,javascript]
+----
+deck.off(eventName, handler);
+----
+
+==== destroy()
+
+Destroy the deck instance and clean up.
+
+[source,javascript]
+----
+deck.destroy();
+----
+
+=== Properties
+
+`slides`::
+*Type*: `Array<HTMLElement>` +
+*Description*: Array of all slide elements
+
+[source,javascript]
+----
+console.log('Total slides:', deck.slides.length);
+deck.slides.forEach((slide, index) => {
+    console.log(`Slide ${index}:`, slide);
+});
+----
+
+=== Events
+
+==== activate
+
+Fired when a slide becomes active.
+
+[source,javascript]
+----
+deck.on('activate', (event) => {
+    // event.index: number - Slide index
+    // event.slide: HTMLElement - Slide element
+});
+----
+
+==== deactivate
+
+Fired when a slide becomes inactive.
+
+[source,javascript]
+----
+deck.on('deactivate', (event) => {
+    // event.index: number - Slide index
+    // event.slide: HTMLElement - Slide element
+});
+----
+
+==== next
+
+Fired when navigating to next slide.
+
+[source,javascript]
+----
+deck.on('next', (event) => {
+    // event.index: number - Current slide index
+});
+----
+
+==== prev
+
+Fired when navigating to previous slide.
+
+[source,javascript]
+----
+deck.on('prev', (event) => {
+    // event.index: number - Current slide index
+});
+----
+
+==== slide
+
+Fired when slide changes.
+
+[source,javascript]
+----
+deck.on('slide', (event) => {
+    // event.index: number - New slide index
+});
+----
+
+==== destroy
+
+Fired when deck is destroyed.
+
+[source,javascript]
+----
+deck.on('destroy', () => {
+    console.log('Deck destroyed');
+});
+----
+
+== HTML Data Attributes
+
+Special attributes used in HTML templates.
+
+=== data-adoc
+
+*Element*: `<html>` +
+*Type*: `string` +
+*Required*: Yes (for Vite plugin) +
+*Description*: Path to AsciiDoc source file
+
+[source,html]
+----
+<html data-adoc="./presentation.adoc">
+----
+
+=== data-adoc-insert-here
+
+*Element*: Any block element +
+*Required*: Yes (for Vite plugin) +
+*Description*: Marker where converted slides will be inserted
+
+[source,html]
+----
+<div data-adoc-insert-here></div>
+----
+
+== CSS Classes
+
+=== Deck Classes
+
+`deck-full`::
+Full presentation mode
+
+`deck-list`::
+List view mode
+
+`deck-grid`::
+Grid view mode
+
+`deck-editor`::
+Editor mode active
+
+`deck-pointless`::
+Cursor hidden (after inactivity)
+
+=== Slide Classes
+
+`slide`::
+Base slide class (always present)
+
+`active`::
+Current/active slide
+
+`inactive`::
+Non-active slides
+
+`past`::
+Slides before current
+
+`future`::
+Slides after current
+
+`past-N`::
+Specific distance before current (e.g., `past-1`, `past-2`)
+
+`future-N`::
+Specific distance after current (e.g., `future-1`, `future-2`)
+
+=== Content Classes
+
+`prez-speaker-notes`::
+Speaker notes container
+
+`bespoke-progress-parent`::
+Progress bar container
+
+`bespoke-progress-bar`::
+Progress bar indicator
+
+== CSS Custom Properties
+
+You can customize styles using CSS custom properties:
+
+[source,css]
+----
+:root {
+    /* Slide dimensions */
+    --slide-width: 1024px;
+    --slide-height: 768px;
+    
+    /* Colors */
+    --primary-color: #0066cc;
+    --background-color: #ffffff;
+    --text-color: #333333;
+    
+    /* Typography */
+    --base-font-size: 2rem;
+    --heading-font: 'Arial', sans-serif;
+    --body-font: 'Georgia', serif;
+    
+    /* Spacing */
+    --slide-padding: 2rem;
+    
+    /* Transitions */
+    --transition-duration: 0.3s;
+    --transition-timing: ease;
+}
+----
+
+== Template Slot System
+
+=== Slot Markers
+
+In template HTML files, use comments as slot markers:
+
+[source,html]
+----
+<!-- slot=slotName -->
+----
+
+=== Reserved Slot Names
+
+`title`::
+Receives slide title block
+
+`default`::
+Receives content without explicit slot assignment
+
+`all`::
+Receives all content blocks (useful for wrappers)
+
+=== Custom Slots
+
+Create custom slots with any name:
+
+[source,html]
+----
+<!-- slot=sidebar -->
+<!-- slot=footer -->
+<!-- slot=header -->
+----
+
+Use in AsciiDoc with slot attribute:
+
+[source,asciidoc]
+----
+[slot="sidebar"]
+Sidebar content
+
+[slot="footer"]
+Footer content
+----
+
+== Module Exports
+
+=== Main Exports
+
+[source,javascript]
+----
+// Vite plugin
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+// Bespoke plugins
+import * as plugins from '@tblaisot/prez-as-adoc/bespoke/plugins';
+// or individually:
+import { classes, scale, nav } from '@tblaisot/prez-as-adoc/bespoke/plugins';
+
+// AsciiDoctor extensions
+import { 
+    slidesTreeprocessor, 
+    speakerNotesTreeprocessor 
+} from '@tblaisot/prez-as-adoc/asciidoctor/extensions';
+
+// Styles
+import '@tblaisot/prez-as-adoc/bespoke/styles/main.css';
+----
+
+== TypeScript Support
+
+While the library is written in JavaScript, you can use it with TypeScript:
+
+[source,typescript]
+----
+import type { Plugin } from 'vite';
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+interface PrezOptions {
+    slidesTemplates?: string[];
+    // ... other options
+}
+
+const options: PrezOptions = {
+    slidesTemplates: ['./templates']
+};
+
+const plugin: Plugin = prezAsAdoc(options);
+----
+
+== Version Compatibility
+
+* *Node.js*: >= 14.0.0
+* *Vite*: >= 5.0.0
+* *Browsers*: Modern browsers (ES2015+)
+** Chrome >= 90
+** Firefox >= 88
+** Safari >= 14
+** Edge >= 90
+
+== Error Handling
+
+Common errors and their meanings:
+
+`Template not found`::
+No matching template file in specified directories
+
+`AsciiDoc parse error`::
+Invalid AsciiDoc syntax in source file
+
+`Invalid slot marker`::
+Malformed `<!-- slot=name -->` comment in template
+
+`Extension registration failed`::
+Problem registering AsciiDoctor extensions
+
+Check console for detailed error messages and stack traces.
+
