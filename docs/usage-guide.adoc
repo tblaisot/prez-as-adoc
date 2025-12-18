@@ -1,0 +1,940 @@
+= Usage Guide
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Introduction
+
+This guide provides practical examples and best practices for creating presentations with *prez-as-adoc*. Whether you're a beginner or an advanced user, you'll find examples to help you create engaging presentations.
+
+== Getting Started
+
+=== Installation
+
+[source,bash]
+----
+npm install @tblaisot/prez-as-adoc
+----
+
+=== Project Setup
+
+==== Minimal Setup with Vite
+
+. *Create project structure*:
++
+[source,bash]
+----
+mkdir my-presentation
+cd my-presentation
+npm init -y
+npm install vite @tblaisot/prez-as-adoc bespoke
+----
+
+. *Create vite.config.js*:
++
+[source,javascript]
+----
+import { defineConfig } from 'vite';
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins';
+
+export default defineConfig({
+    plugins: [prezAsAdoc()]
+});
+----
+
+. *Create index.html*:
++
+[source,html]
+----
+<!DOCTYPE html>
+<html data-adoc="./presentation.adoc">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div data-adoc-insert-here></div>
+    <script type="module" src="/main.js"></script>
+</body>
+</html>
+----
+
+. *Create main.js*:
++
+[source,javascript]
+----
+import bespoke from 'bespoke';
+import {
+    classes,
+    scale,
+    nav,
+    hash,
+    progress,
+    speaker,
+    viewMode
+} from '@tblaisot/prez-as-adoc/bespoke/plugins';
+import '@tblaisot/prez-as-adoc/bespoke/styles/main.css';
+
+bespoke.from('.deck', [
+    classes(),
+    scale(),
+    nav(),
+    hash(),
+    progress(),
+    speaker({ notes: '.prez-speaker-notes' }),
+    viewMode()
+]);
+----
+
+. *Create presentation.adoc*:
++
+[source,asciidoc]
+----
+= My First Presentation
+:author: Your Name
+
+== Hello World
+
+This is my first slide!
+----
+
+. *Add scripts to package.json*:
++
+[source,json]
+----
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}
+----
+
+. *Run development server*:
++
+[source,bash]
+----
+npm run dev
+----
+
+== Basic AsciiDoc Syntax
+
+=== Document Header
+
+[source,asciidoc]
+----
+= Presentation Title
+:author: John Doe
+:email: john@example.com
+:revdate: 2025-11-12
+:keywords: presentation, asciidoc
+:description: A brief description of the presentation
+----
+
+=== Creating Slides
+
+Each section creates a new slide:
+
+[source,asciidoc]
+----
+= My Presentation
+
+== First Slide
+
+Content of the first slide.
+
+== Second Slide
+
+Content of the second slide.
+
+=== Nested Slide
+
+Nested sections become separate slides too.
+----
+
+=== Text Formatting
+
+[source,asciidoc]
+----
+== Text Formatting
+
+*Bold text*
+
+_Italic text_
+
+`Monospace text`
+
+[.underline]#Underlined text#
+
+^Superscript^ and ~Subscript~
+----
+
+=== Lists
+
+==== Unordered Lists
+
+[source,asciidoc]
+----
+== Key Points
+
+* First point
+* Second point
+** Nested point
+** Another nested point
+* Third point
+----
+
+==== Ordered Lists
+
+[source,asciidoc]
+----
+== Steps
+
+. First step
+. Second step
+.. Sub-step A
+.. Sub-step B
+. Third step
+----
+
+==== Checklists
+
+[source,asciidoc]
+----
+== TODO
+
+* [*] Completed task
+* [x] Also completed
+* [ ] Pending task
+----
+
+=== Links and Images
+
+[source,asciidoc]
+----
+== Resources
+
+link:https://example.com[Visit our website]
+
+image::diagram.png[Diagram, 800, 600]
+
+image::logo.svg[Logo, 200]
+----
+
+=== Code Blocks
+
+[source,asciidoc]
+....
+== Code Example
+
+[source,javascript]
+----
+function hello() {
+    console.log('Hello, World!');
+}
+----
+....
+
+=== Tables
+
+[source,asciidoc]
+----
+== Comparison
+
+|===
+| Feature | Option A | Option B
+
+| Speed
+| Fast
+| Faster
+
+| Cost
+| $100
+| $200
+
+| Quality
+| Good
+| Better
+|===
+----
+
+=== Admonitions
+
+[source,asciidoc]
+----
+== Important Notes
+
+NOTE: This is a note.
+
+TIP: Here's a helpful tip.
+
+IMPORTANT: Pay attention to this.
+
+WARNING: Be careful about this.
+
+CAUTION: Proceed with caution.
+----
+
+== Speaker Notes
+
+Add notes visible only in speaker view:
+
+[source,asciidoc]
+----
+== Slide Title
+
+Visible content on the slide.
+
+[.notes]
+****
+These are speaker notes.
+
+* Remember to mention X
+* Don't forget about Y
+* Emphasize Z
+****
+----
+
+Or using a sidebar:
+
+[source,asciidoc]
+----
+== Another Slide
+
+Main content here.
+
+.Speaker Notes
+[sidebar.notes]
+Talk about the background and context.
+----
+
+*Access speaker view*: Press `s` during the presentation.
+
+== Slide Templates
+
+=== Creating Custom Templates
+
+. *Create template directory*:
++
+[source,bash]
+----
+mkdir templates
+----
+
+. *Create template file* `templates/hero-slide.html`:
++
+[source,html]
+----
+<div class="hero-slide">
+    <div class="hero-background"></div>
+    <div class="hero-content">
+        <div class="hero-title">
+            <!-- slot=title -->
+        </div>
+        <div class="hero-subtitle">
+            <!-- slot=subtitle -->
+        </div>
+    </div>
+</div>
+----
+
+. *Update vite.config.js*:
++
+[source,javascript]
+----
+export default defineConfig({
+    plugins: [
+        prezAsAdoc({
+            slidesTemplates: ['./templates']
+        })
+    ]
+});
+----
+
+. *Use template in AsciiDoc*:
++
+[source,asciidoc]
+----
+[slide-template="hero"]
+== Amazing Title
+
+[slot="subtitle"]
+A compelling subtitle
+----
+
+=== Common Template Patterns
+
+==== Two-Column Layout
+
+.templates/two-column-slide.html
+[source,html]
+----
+<div class="two-column">
+    <div class="column-left">
+        <!-- slot=left -->
+    </div>
+    <div class="column-right">
+        <!-- slot=right -->
+    </div>
+</div>
+----
+
+.Usage
+[source,asciidoc]
+----
+[slide-template="two-column"]
+== Comparison
+
+[slot="left"]
+=== Left Side
+
+Content for left column.
+
+[slot="right"]
+=== Right Side
+
+Content for right column.
+----
+
+==== Title + Content + Footer
+
+.templates/footer-slide.html
+[source,html]
+----
+<div class="slide-with-footer">
+    <header>
+        <!-- slot=title -->
+    </header>
+    <main>
+        <!-- slot=default -->
+    </main>
+    <footer>
+        <!-- slot=footer -->
+    </footer>
+</div>
+----
+
+.Usage
+[source,asciidoc]
+----
+[slide-template="footer"]
+== Slide Title
+
+Main content goes here.
+
+[slot="footer"]
+© 2025 Company Name
+----
+
+==== Full-Screen Image with Text
+
+.templates/image-overlay-slide.html
+[source,html]
+----
+<div class="image-overlay">
+    <div class="background-image">
+        <!-- slot=background -->
+    </div>
+    <div class="overlay-text">
+        <!-- slot=title -->
+        <!-- slot=default -->
+    </div>
+</div>
+----
+
+== Styling
+
+=== Custom CSS
+
+Create a custom stylesheet:
+
+.style.css
+[source,css]
+----
+@import '@tblaisot/prez-as-adoc/bespoke/styles/main.css';
+
+/* Custom colors */
+:root {
+    --primary-color: #0066cc;
+    --secondary-color: #ff6600;
+    --text-color: #333;
+    --background-color: #fff;
+}
+
+/* Slide styles */
+.slide {
+    background: var(--background-color);
+    color: var(--text-color);
+    padding: 2rem;
+}
+
+/* Title styles */
+.slide h2 {
+    color: var(--primary-color);
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Custom template styles */
+.hero-slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    height: 100%;
+}
+----
+
+Import in main.js:
+
+[source,javascript]
+----
+import './style.css';
+----
+
+=== Slide-Specific Styles
+
+Use roles to apply styles to specific slides:
+
+[source,asciidoc]
+----
+[.dark-theme]
+== Dark Slide
+
+This slide has a dark background.
+
+[.center-content]
+== Centered
+
+Everything is centered.
+----
+
+.style.css
+[source,css]
+----
+.slide.dark-theme {
+    background: #222;
+    color: #fff;
+}
+
+.slide.center-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+----
+
+== Advanced Features
+
+=== Animated Lists
+
+Reveal list items one at a time:
+
+[source,asciidoc]
+----
+[%step]
+== Animated Points
+
+* First point (appears immediately)
+* Second point (appears on next)
+* Third point (appears on next)
+----
+
+Configure in JavaScript:
+
+[source,javascript]
+----
+import bullets from 'bespoke-bullets';
+
+bespoke.from('.deck', [
+    // ... other plugins
+    bullets('li, .bullet')
+]);
+----
+
+=== Fragments
+
+Reveal content progressively:
+
+[source,asciidoc]
+----
+== Progressive Reveal
+
+Initial content visible.
+
+[.fragment]
+This appears next.
+
+[.fragment]
+This appears after that.
+----
+
+Requires custom fragment plugin or CSS:
+
+[source,css]
+----
+.fragment {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.fragment.visible {
+    opacity: 1;
+}
+----
+
+=== Slide Backgrounds
+
+Use custom backgrounds:
+
+[source,asciidoc]
+----
+[background-image="sunset.jpg"]
+== Beautiful Slide
+
+Content over background image.
+
+[background-color="#000033"]
+== Dark Blue Slide
+
+Dark background with light text.
+----
+
+Add CSS to support this:
+
+[source,css]
+----
+.slide[style*="background-image"] {
+    background-size: cover;
+    background-position: center;
+}
+----
+
+=== Slide Transitions
+
+Add custom transitions:
+
+[source,css]
+----
+.slide {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.slide.past {
+    transform: translateX(-100%) scale(0.8);
+    opacity: 0;
+}
+
+.slide.future {
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+}
+
+.slide.active {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+}
+----
+
+=== Video Embedding
+
+[source,asciidoc]
+----
+== Video Demo
+
+++++
+<video controls width="800">
+    <source src="demo.mp4" type="video/mp4">
+</video>
+++++
+----
+
+=== Interactive Elements
+
+Add interactive HTML:
+
+[source,asciidoc]
+----
+== Interactive Demo
+
+++++
+<button onclick="alert('Hello!')">Click Me</button>
+
+<input type="range" min="0" max="100" oninput="this.nextElementSibling.textContent = this.value">
+<span>50</span>
+++++
+----
+
+== Keyboard Shortcuts
+
+Default shortcuts provided by plugins:
+
+|===
+| Key | Action
+
+| → / Space
+| Next slide
+
+| ← / Shift+Space
+| Previous slide
+
+| Home
+| First slide
+
+| End
+| Last slide
+
+| `s`
+| Open speaker view
+
+| `g`
+| Toggle grid mode
+
+| `l`
+| Toggle list mode
+
+| Esc
+| Exit grid/list mode
+|===
+
+=== Custom Shortcuts
+
+Add custom keyboard handlers:
+
+[source,javascript]
+----
+const deck = bespoke.from('.deck', [/* plugins */]);
+
+deck.addKeyHandler('h', () => {
+    window.location.href = '/help.html';
+});
+
+deck.addKeyHandler('f', () => {
+    document.documentElement.requestFullscreen();
+});
+----
+
+== Building for Production
+
+=== Build Command
+
+[source,bash]
+----
+npm run build
+----
+
+=== Output
+
+Built files are in `dist/`:
+
+[source,text]
+----
+dist/
+├── index.html
+├── assets/
+│   ├── index-abc123.js
+│   ├── index-def456.css
+│   └── images/...
+└── ...
+----
+
+=== Deployment
+
+Deploy the `dist/` directory to any static hosting:
+
+==== Netlify
+
+[source,bash]
+----
+# Install Netlify CLI
+npm install -g netlify-cli
+
+# Deploy
+netlify deploy --prod --dir dist
+----
+
+==== GitHub Pages
+
+[source,bash]
+----
+# Build
+npm run build
+
+# Deploy (using gh-pages package)
+npx gh-pages -d dist
+----
+
+==== Vercel
+
+[source,bash]
+----
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy
+vercel --prod
+----
+
+=== Custom Base Path
+
+If deploying to a subdirectory:
+
+.vite.config.js
+[source,javascript]
+----
+export default defineConfig({
+    base: '/my-presentation/',
+    plugins: [prezAsAdoc()]
+});
+----
+
+== Tips and Best Practices
+
+=== Content Organization
+
+* One main idea per slide
+* Use speaker notes for additional context
+* Keep slides visual and concise
+* Use consistent formatting
+
+=== Visual Design
+
+* Choose readable fonts and sizes
+* Maintain sufficient contrast
+* Use whitespace effectively
+* Limit text per slide
+* Use images and diagrams
+
+=== Performance
+
+* Optimize images before including
+* Use appropriate image formats (WebP, SVG)
+* Minimize custom JavaScript
+* Keep CSS focused and minimal
+
+=== Accessibility
+
+* Provide alt text for images
+* Use semantic HTML
+* Ensure keyboard navigation works
+* Test with screen readers
+* Maintain good color contrast
+
+=== Development Workflow
+
+* Use version control (Git)
+* Keep source files organized
+* Document custom templates
+* Test on target devices/browsers
+* Preview before presenting
+
+=== Presenting Tips
+
+* Test speaker view beforehand
+* Have backup presentation format (PDF)
+* Check display resolution
+* Practice keyboard shortcuts
+* Test on presentation hardware
+
+== Troubleshooting
+
+=== Common Issues
+
+==== Slides Not Appearing
+
+*Check*:
+* HTML has `data-adoc` attribute
+* AsciiDoc file path is correct
+* Sections are properly formatted
+* JavaScript initialized Bespoke
+
+==== Formatting Issues
+
+*Check*:
+* CSS is loaded
+* Custom styles don't conflict
+* Template slots are correct
+* Browser console for errors
+
+==== Speaker View Not Working
+
+*Check*:
+* Speaker plugin is loaded
+* Press `s` to open speaker view
+* Popup blockers aren't blocking
+* Notes have correct class
+
+==== Build Failures
+
+*Check*:
+* AsciiDoc syntax is valid
+* All paths are correct
+* Dependencies are installed
+* Node version is compatible
+
+=== Getting Help
+
+* Check documentation
+* Review example projects
+* Search GitHub issues
+* Check browser console
+* Test in clean environment
+
+== Example Projects
+
+=== Simple Presentation
+
+Minimal presentation with basic slides.
+
+*Files*: 3 files, ~50 lines total
+
+*Features*: Basic slides, navigation, progress bar
+
+=== Corporate Presentation
+
+Professional presentation with custom branding.
+
+*Files*: 10+ files
+
+*Features*: Custom templates, branded styles, speaker notes
+
+=== Technical Talk
+
+Code-heavy presentation with syntax highlighting.
+
+*Files*: 15+ files
+
+*Features*: Code blocks, diagrams, interactive demos
+
+=== Workshop Materials
+
+Multi-part presentation for teaching.
+
+*Files*: 20+ files
+
+*Features*: Multiple presentations, shared templates, exercises
+
+== Next Steps
+
+* Review xref:architecture.adoc[Architecture] for deeper understanding
+* Explore xref:asciidoctor-components.adoc[AsciiDoctor Components] for customization
+* Study xref:bespoke-components.adoc[Bespoke Components] for interactivity
+* Check xref:api-reference.adoc[API Reference] for complete options
+
+== Resources
+
+* link:https://asciidoctor.org/[AsciiDoctor Documentation]
+* link:https://github.com/bespokejs/bespoke[Bespoke.js GitHub]
+* link:https://vitejs.dev/[Vite Documentation]
+* Project GitHub Repository
+

@@ -1,0 +1,333 @@
+= prez-as-adoc Documentation
+:toc: left
+:icons: font
+
+== Welcome
+
+Welcome to the *prez-as-adoc* documentation! This comprehensive guide will help you understand and use this powerful tool for creating interactive presentations from AsciiDoc documents.
+
+== What is prez-as-adoc?
+
+*prez-as-adoc* is a tool that combines:
+
+* *AsciiDoc* - Clean, semantic markup language
+* *Bespoke.js* - Modern, flexible presentation framework
+* *Vite* - Fast development and build tooling
+
+The result is a workflow that lets you write presentations in simple text format while generating beautiful, interactive slide decks.
+
+== Documentation Structure
+
+=== For New Users
+
+Start here if you're new to prez-as-adoc:
+
+. *xref:index.adoc[Getting Started]* - Overview and quick start guide
+. *xref:usage-guide.adoc[Usage Guide]* - Practical examples and tutorials
+
+=== For Developers
+
+Dive deeper into how prez-as-adoc works:
+
+. *xref:architecture.adoc[Architecture Overview]* - System design and data flow
+. *xref:asciidoctor-components.adoc[AsciiDoctor Components]* - Extensions and templates
+. *xref:bespoke-components.adoc[Bespoke Components]* - Plugins and presentation framework
+. *xref:vite-integration.adoc[Vite Integration]* - Development tooling
+
+=== Reference
+
+Complete API and configuration reference:
+
+. *xref:api-reference.adoc[API Reference]* - All APIs, options, and interfaces
+
+== Quick Navigation
+
+=== I want to...
+
+*Create my first presentation*::
+→ xref:index.adoc#quick-start[Quick Start Guide]
+
+*Learn AsciiDoc syntax for slides*::
+→ xref:usage-guide.adoc#basic-asciidoc-syntax[Basic AsciiDoc Syntax]
+
+*Create custom slide templates*::
+→ xref:usage-guide.adoc#slide-templates[Slide Templates Guide]
+
+*Add speaker notes*::
+→ xref:usage-guide.adoc#speaker-notes[Speaker Notes]
+
+*Customize styling*::
+→ xref:usage-guide.adoc#styling[Styling Guide]
+
+*Understand the architecture*::
+→ xref:architecture.adoc[Architecture Overview]
+
+*Look up a specific API*::
+→ xref:api-reference.adoc[API Reference]
+
+*Integrate with Vite*::
+→ xref:vite-integration.adoc[Vite Integration]
+
+*Customize Bespoke plugins*::
+→ xref:bespoke-components.adoc[Bespoke Components]
+
+*Deploy to production*::
+→ xref:usage-guide.adoc#building-for-production[Building for Production]
+
+== Document Overview
+
+=== index.adoc
+
+The main entry point with:
+
+* Overview of features
+* Quick start examples
+* Project structure
+* Core concepts
+* Technology stack
+
+=== architecture.adoc
+
+Comprehensive architecture documentation covering:
+
+* System components and layers
+* Processing pipeline
+* Data flow diagrams
+* Plugin architecture
+* Extension points
+* Design principles
+
+=== asciidoctor-components.adoc
+
+Deep dive into AsciiDoc processing:
+
+* Extensions (tree processors)
+* Templates (HTML generation)
+* Slot system
+* Custom template creation
+* Best practices
+
+=== bespoke-components.adoc
+
+Complete Bespoke.js framework documentation:
+
+* All plugin APIs
+* Assets (speaker view, etc.)
+* Styling system
+* CSS organization
+* Customization guide
+
+=== vite-integration.adoc
+
+Vite plugin documentation:
+
+* Plugin configuration
+* Development workflow
+* Hot reload behavior
+* Production builds
+* Deployment strategies
+
+=== usage-guide.adoc
+
+Practical guide with examples:
+
+* Getting started
+* AsciiDoc syntax
+* Creating slides
+* Speaker notes
+* Templates
+* Styling
+* Advanced features
+* Tips and best practices
+
+=== api-reference.adoc
+
+Complete API reference:
+
+* CLI options
+* Vite plugin API
+* Bespoke plugin APIs
+* AsciiDoc attributes
+* Deck instance API
+* HTML attributes
+* CSS classes
+
+== Key Features Explained
+
+=== Write in AsciiDoc
+
+Simple, readable markup:
+
+[source,asciidoc]
+----
+= My Presentation
+
+== First Slide
+
+* Point one
+* Point two
+
+== Second Slide
+
+More content here.
+----
+
+=== Custom Templates
+
+Create reusable slide layouts:
+
+[source,html]
+----
+<div class="two-column">
+    <div class="left">
+        <!-- slot=left -->
+    </div>
+    <div class="right">
+        <!-- slot=right -->
+    </div>
+</div>
+----
+
+=== Speaker Notes
+
+Hidden notes for presenters:
+
+[source,asciidoc]
+----
+== Slide Title
+
+Visible content.
+
+[.notes]
+****
+Private notes here.
+****
+----
+
+=== Interactive Features
+
+* Keyboard navigation
+* URL-based slide sharing
+* Progress indicator
+* Speaker view window
+* Multiple view modes (full/list/grid)
+* Live editing mode
+
+=== Modern Development
+
+* Fast hot reload
+* Optimized builds
+* TypeScript support
+* ES modules
+* Modern CSS
+
+== Common Use Cases
+
+=== Technical Presentations
+
+* Code examples with syntax highlighting
+* Technical diagrams
+* Live demos
+* Speaker notes for technical details
+
+=== Corporate Presentations
+
+* Custom branding via templates
+* Professional styling
+* Consistent layouts
+* Embedded media
+
+=== Educational Content
+
+* Progressive reveals
+* Interactive elements
+* Multiple presentations
+* Shared templates
+
+=== Conference Talks
+
+* Speaker view
+* Timer
+* URL sharing
+* Print-friendly mode
+
+== Technology Stack
+
+[cols="1,3"]
+|===
+| Technology | Purpose
+
+| AsciiDoc
+| Content markup language
+
+| AsciiDoctor.js
+| AsciiDoc parser and converter
+
+| Bespoke.js
+| Presentation framework
+
+| Vite
+| Development server and build tool
+
+| Node.js
+| Runtime environment
+
+| ES Modules
+| Modern JavaScript modules
+
+| CSS Grid/Flexbox
+| Layout system
+|===
+
+== Browser Support
+
+* Chrome/Edge >= 90
+* Firefox >= 88
+* Safari >= 14
+* Modern browsers with ES2015+ support
+
+== Getting Help
+
+=== Documentation
+
+* Read relevant sections above
+* Check API reference for specific details
+* Review examples in usage guide
+
+=== Troubleshooting
+
+Common issues are documented in:
+
+* xref:usage-guide.adoc#troubleshooting[Usage Guide - Troubleshooting]
+* xref:vite-integration.adoc#troubleshooting[Vite Integration - Troubleshooting]
+
+=== Resources
+
+* link:https://asciidoctor.org/docs/[AsciiDoc Documentation]
+* link:https://github.com/bespokejs/bespoke[Bespoke.js GitHub]
+* link:https://vitejs.dev/guide/[Vite Guide]
+
+== Contributing
+
+Contributions welcome! When contributing:
+
+. Read the xref:architecture.adoc[Architecture] documentation
+. Understand component responsibilities
+. Follow existing code patterns
+. Update documentation for new features
+. Add examples for new functionality
+
+== License
+
+ISC License
+
+== Next Steps
+
+1. Start with xref:index.adoc[Getting Started]
+2. Follow the xref:usage-guide.adoc[Usage Guide]
+3. Create your first presentation
+4. Explore advanced features
+5. Customize to your needs
+
+Happy presenting! 🎉
+

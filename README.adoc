@@ -19,7 +19,7 @@ prez-as-adoc --base_dir=./src --to_dir=./dist --slides-templates=./slide-templat
 [source,bash]
 ----
 // vite.config.js
-import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite-plugins'
+import { prezAsAdoc } from '@tblaisot/prez-as-adoc/vite/plugins'
 import { defineConfig } from 'vite'
 
 export default defineConfig({

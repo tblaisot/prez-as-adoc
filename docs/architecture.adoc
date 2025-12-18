@@ -1,0 +1,382 @@
+= Architecture Overview
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
+
+== Introduction
+
+This document describes the overall architecture of *prez-as-adoc*, explaining how the different components work together to transform AsciiDoc documents into interactive presentations.
+
+== Architecture Diagram
+
+[source,text]
+----
+┌─────────────────┐
+│  AsciiDoc File  │
+│   (*.adoc)      │
+└────────┬────────┘
+         │
+         ▼
+┌────────────────────────────────────────────┐
+│        AsciiDoctor Processing              │
+│  ┌──────────────────────────────────┐     │
+│  │  1. Parse AsciiDoc → AST         │     │
+│  └──────────────┬───────────────────┘     │
+│                 │                          │
+│  ┌──────────────▼───────────────────┐     │
+│  │  2. Apply Tree Processors        │     │
+│  │     - Speaker Notes Processor    │     │
+│  │     - Slides Processor           │     │
+│  └──────────────┬───────────────────┘     │
+│                 │                          │
+│  ┌──────────────▼───────────────────┐     │
+│  │  3. Apply Templates              │     │
+│  │     - document.js                │     │
+│  │     - slide.js                   │     │
+│  │     - title.js                   │     │
+│  │     - speaker_note.js            │     │
+│  └──────────────┬───────────────────┘     │
+└─────────────────┼────────────────────────┘
+                  │
+                  ▼
+         ┌────────────────┐
+         │  HTML Output   │
+         │  (with slots)  │
+         └────────┬───────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────┐
+│      Bespoke.js Enhancement                 │
+│  ┌────────────────────────────────────┐    │
+│  │  Plugins Initialize:               │    │
+│  │  - classes (slide state mgmt)      │    │
+│  │  - scale (responsive sizing)       │    │
+│  │  - nav (keyboard/click navigation) │    │
+│  │  - hash (URL state)                │    │
+│  │  - progress (progress bar)         │    │
+│  │  - speaker (notes & speaker view)  │    │
+│  │  - view-mode (list/grid modes)     │    │
+│  │  - editor (live editing)           │    │
+│  │  - debug (development tools)       │    │
+│  └────────────────────────────────────┘    │
+└─────────────────────────────────────────────┘
+                  │
+                  ▼
+         ┌────────────────┐
+         │  Interactive   │
+         │  Presentation  │
+         └────────────────┘
+----
+
+== Components Overview
+
+=== Layer 1: AsciiDoc Processing
+
+The first layer handles the conversion of AsciiDoc markup into structured HTML.
+
+==== Components
+
+* *AsciiDoctor.js*: Core parsing engine
+* *Custom Extensions*: Modify the AST before template rendering
+* *Custom Templates*: Generate HTML from the AST
+
+==== Data Flow
+
+. AsciiDoc file is loaded and parsed into an Abstract Syntax Tree (AST)
+. Tree processors transform the AST:
+** Convert sections into slides
+** Extract speaker notes
+** Apply slide templates
+. Templates render HTML with semantic structure
+. Output HTML contains `<section class="slide">` elements
+
+=== Layer 2: Presentation Framework
+
+The second layer adds interactivity and presentation features using Bespoke.js.
+
+==== Components
+
+* *Bespoke.js Core*: Slide deck management
+* *Custom Plugins*: Add specific presentation features
+* *Styles*: Visual presentation and layout
+
+==== Data Flow
+
+. HTML is loaded in the browser
+. Bespoke.js initializes with plugin stack
+. Plugins add event listeners and UI elements
+. User interactions trigger plugin behaviors
+. Slide states are managed and synced
+
+=== Layer 3: Build & Development Tools
+
+The third layer provides tooling for development and production builds.
+
+==== Components
+
+* *Vite Plugin*: Development server integration
+* *CLI Tool*: Command-line build interface
+* *Hot Reload*: Live development updates
+
+== Processing Pipeline Details
+
+=== AsciiDoc to Slides Transformation
+
+[source,text]
+----
+Input AsciiDoc:
+  = My Presentation
+  
+  Preamble content
+  
+  == First Slide
+  
+  Content here
+  
+  == Second Slide
+  
+  More content
+
+Tree Processor Output:
+  Document
+  ├── Slide (level=0, template=title-slide)
+  │   ├── Title: "My Presentation"
+  │   └── Preamble content
+  ├── Slide (level=1)
+  │   ├── Title: "First Slide"
+  │   └── Content blocks
+  └── Slide (level=1)
+      ├── Title: "Second Slide"
+      └── Content blocks
+----
+
+=== Speaker Notes Processing
+
+[source,text]
+----
+Input:
+  == Slide Title
+  
+  Visible content
+  
+  [.notes]
+  ****
+  These are speaker notes
+  ****
+
+Processing:
+  1. Speaker Notes TreeProcessor identifies notes blocks
+  2. Sets context to 'speaker_note'
+  3. Slide template separates notes from content
+  4. Notes rendered with class 'prez-speaker-notes'
+  5. Speaker plugin extracts and displays in speaker view
+----
+
+=== Template Resolution
+
+[source,text]
+----
+Slide with template attribute:
+  [slide-template="two-column"]
+  == Slide Title
+
+Resolution process:
+  1. Read template attribute value: "two-column"
+  2. Search in template directories for "two-column-slide.html"
+  3. Load template file
+  4. Replace slot markers with content:
+     - <!-- slot=title --> → slide title
+     - <!-- slot=default --> → main content
+     - <!-- slot=custom-name --> → content with slot="custom-name"
+  5. Return rendered HTML
+----
+
+== Plugin Architecture
+
+=== Bespoke.js Plugin System
+
+Plugins follow a functional pattern:
+
+[source,javascript]
+----
+export function pluginName(options = {}) {
+    return function(deck) {
+        // Plugin initialization
+        // Access to:
+        // - deck.slides: Array of slide elements
+        // - deck.slide(): Get/set current slide
+        // - deck.on(event, handler): Listen to events
+        // - deck.addKeyHandler(key, handler): Add keyboard shortcuts
+        
+        // Event listeners
+        deck.on('activate', (event) => {
+            // Runs when a slide becomes active
+        });
+        
+        deck.on('destroy', () => {
+            // Cleanup
+        });
+    };
+}
+----
+
+=== Plugin Lifecycle
+
+. Plugin functions are created with configuration
+. Bespoke core calls each plugin with the deck instance
+. Plugins attach event listeners and add functionality
+. Plugins respond to deck events (activate, deactivate, etc.)
+. On destroy, plugins clean up resources
+
+=== Plugin Communication
+
+Plugins can communicate through:
+
+* *DOM Events*: Standard browser events
+* *Deck Events*: Bespoke-specific events (`activate`, `deactivate`)
+* *Shared State*: DOM attributes and classes
+* *PostMessage API*: For cross-window communication (speaker view)
+
+== Build Modes
+
+=== CLI Mode
+
+. User runs `prez-as-adoc` command
+. CLI parses arguments
+. Registers extensions with AsciiDoctor
+. Configures template directories
+. Converts AsciiDoc file to HTML
+. Writes output to destination directory
+
+=== Vite Plugin Mode
+
+. User runs `vite dev` or `vite build`
+. Vite loads prez-as-adoc plugin
+. Plugin hooks into `transformIndexHtml`
+. On HTML request:
+.. Reads data-adoc attribute to find source file
+.. Converts AsciiDoc to HTML
+.. Injects into HTML template
+.. Returns transformed HTML
+. Hot reload watches `.adoc` files
+. On change, triggers full page reload
+
+== Extension Points
+
+The architecture provides several extension points:
+
+=== 1. Custom AsciiDoc Extensions
+
+Add new tree processors or block processors:
+
+[source,javascript]
+----
+registry.treeProcessor(function() {
+    this.process(function(document) {
+        // Modify AST
+        return document;
+    });
+});
+----
+
+=== 2. Custom Templates
+
+Override default templates by providing template directories:
+
+* Create `*-slide.html` files for slide templates
+* Override built-in templates (slide.js, title.js, etc.)
+
+=== 3. Custom Bespoke Plugins
+
+Add new presentation features:
+
+[source,javascript]
+----
+export function myPlugin(options) {
+    return function(deck) {
+        // Your plugin logic
+    };
+}
+----
+
+=== 4. Custom Styles
+
+Add or override CSS:
+
+* Override default styles
+* Add theme-specific styles
+* Customize slide layouts
+
+== Design Principles
+
+=== Separation of Concerns
+
+* *Content Layer* (AsciiDoc): Pure content and structure
+* *Presentation Layer* (Templates + CSS): Visual design
+* *Interaction Layer* (Bespoke plugins): User interactions
+
+=== Progressive Enhancement
+
+* Base HTML is semantic and accessible
+* JavaScript adds interactivity
+* Fallback behavior without JavaScript
+
+=== Composability
+
+* Plugins are independent and composable
+* Templates can be mixed and matched
+* Extensions can be added without modifying core
+
+=== Development Experience
+
+* Fast hot reload
+* Clear error messages
+* Flexible configuration
+* Multiple usage modes (CLI + Vite)
+
+== Performance Considerations
+
+=== Build Time
+
+* AsciiDoc conversion is synchronous
+* Template resolution caches are possible optimization
+* File I/O is the main bottleneck
+
+=== Runtime Performance
+
+* Minimal JavaScript execution per slide
+* CSS transitions for smooth animations
+* Event delegation for efficient event handling
+* Lazy loading for speaker view
+
+=== Bundle Size
+
+* Modular plugin system allows tree-shaking
+* CSS is split by feature
+* No heavy framework dependencies
+
+== Security Considerations
+
+=== Content Security
+
+* AsciiDoc conversion happens server-side (build time)
+* No eval() or unsafe HTML generation
+* Template slots use safe replacement
+
+=== Speaker View
+
+* Uses window.open() - may be blocked by popup blockers
+* PostMessage API with namespace validation
+* Origin checking for cross-window messages
+
+== Future Architecture Considerations
+
+Potential areas for architectural enhancement:
+
+* *Caching*: Add caching layer for template resolution and conversion
+* *Incremental Processing*: Only reprocess changed slides
+* *Web Workers*: Offload conversion to worker threads
+* *Plugin Discovery*: Auto-discover and load plugins
+* *Virtual Slides*: Support lazy rendering of large presentations
+
