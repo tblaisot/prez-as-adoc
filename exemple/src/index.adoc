@@ -1,0 +1,70 @@
+:imagesdir: assets/images
+:icons: font
+:slide-template-attr: layout
+:slide-default-template: default
+:scripts: scripts/main.js
+:stylesheets: styles/main.css
+:data-attributes: step,step-items
+:lang: ru
+:application-name: Test TBL
+:author: Thomas Blaisot
+:copyright: No copyrith
+:description: test of prez a doc
+:keywords: test,asciidotor
+= NGRX Training
+
+// [layout=deck-title]
+// == NGRX
+image::onepoint.png[]
+
+image::angular_ngrx.png[]
+
+== Test Steps
+
+[%step-items]
+. ligne 1
+. ligne 2
+.. ligne 1.1
+.. ligne 1.2
+. ligne 3
+
+[%step]
+* ligne 1
+* ligne 2
+** ligne 1.1
+** ligne 1.2
+* ligne 3
+
+
+
+== Slide Two
+
+Hello Speaker Notes
+
+[.notes]
+****
+* this is the new block type for speaker notes: sidebar
+* `notes` role required (written `.notes` in block attribute)
+* source is slightly more compact
+* and not tied to an admonition which can be useful in slides
+****
+
+== Slide Three
+
+Other speaker notes styles
+
+[.notes]
+--
+* Using open blocks work too
+* Yay!
+--
+
+== Slide Four
+
+Hello Old Style Speaker Notes
+
+[NOTE.speaker]
+--
+* notes using admonition block still work
+* `aside` or `notes` roles also valid in addition to `speaker`
+--
