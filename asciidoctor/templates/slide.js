@@ -19,12 +19,17 @@ module.exports = function ({node}) {
     const template = node.getAttribute(templateAttrName, defaultTemplate);
 
     let slideContent = '';
+    let notesContent = '';
+
+    const contentNodes = node.getBlocks().filter(n=>n.getContext()!=='speaker_note');
+    const speakerNotesNodes = node.getBlocks().filter(n=>n.getContext()==='speaker_note');
 
     if (isEmptyString(template)) {
         slideContent = node.getBlocks().map(n => n.convert()).join('\n')
     } else {
         slideContent = resolveTemplate(node.document.getAttribute('slide-template-dirs'), template);
-        const blockBySlot = node.getBlocks().reduce(
+        notesContent = speakerNotesNodes.map(n => n.convert()).join('\n');
+        const blockBySlot = contentNodes.reduce(
             (acc, n) => {
                 const slot = n.getAttribute('slot') || 'default'
                 if (!acc[slot]) {
@@ -35,11 +40,11 @@ module.exports = function ({node}) {
             },
             {});
         // Special slot
-        blockBySlot['all'] = node.getBlocks();
+        blockBySlot['all'] = contentNodes;
         Object.entries(blockBySlot).forEach(([slotname, blocks]) => {
             const content = $(blocks.map(n => n.convert()));
             slideContent = slideContent.replace(`<!-- slot=${slotname} -->`, content);
-        })
+        });
     }
     return $('section', {
             class: [
@@ -48,6 +53,6 @@ module.exports = function ({node}) {
                 node.getRole()
             ]
         },
-        slideContent
+        slideContent + notesContent
     );
 }
