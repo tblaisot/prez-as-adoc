@@ -11,14 +11,17 @@
     "prez-as-adoc": "bin/prez-as-adoc.js"
   },
   "exports": {
-    "./asciidoctor-extensions": {
+    "./asciidoctor/extensions": {
       "import": "./asciidoctor/extensions/index.js"
     },
-    "./vite-plugins": {
-      "import": "./vite-plugins/index.js"
+    "./vite/plugins": {
+      "import": "./vite/plugins/index.js"
     },
-    "./bespoke-plugins": {
-      "import": "./bespoke-plugins/index.js"
+    "./bespoke/plugins": {
+      "import": "./bespoke/plugins/index.js"
+    },
+    "./bespoke/styles/main.css": {
+      "import": "./bespoke/styles/main.css"
     }
   },
   "keywords": [
@@ -29,7 +32,12 @@
   "dependencies": {
     "@tblaisot/asciidoctorjs-templates-js": "^0.0.2",
     "arg": "^5.0.2",
-    "node-html-parser": "^6.1.5",
+    "node-html-parser": "^6.1.5"
+  },
+  "peerDependencies": {
+    "vite": ">=4.0.0"
+  },
+  "devDependencies": {
     "vite": "^4.2.1"
   }
 }
