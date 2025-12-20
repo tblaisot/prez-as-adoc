@@ -1,4 +1,4 @@
-const {$h, $a, $section, sectionTitle, isDefined} = require("@tblaisot/asciidoctorjs-templates-js/helpers");
+const {$h, $a, $section, sectionTitle, isDefined, data_attributes} = require("@tblaisot/asciidoctorjs-templates-js/helpers");
 
 module.exports = function ({node}) {
     let content = '';
@@ -16,6 +16,7 @@ module.exports = function ({node}) {
     }
     return $section({
             class: ['doc-section', `level-${node.getLevel()}`, node.getRole()],
+            ...data_attributes(node)
         },
         $h({
                 level: node.getLevel() + 1,
