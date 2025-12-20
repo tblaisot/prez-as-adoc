@@ -15,6 +15,8 @@ module.exports = function ({node}) {
         content += node.getContent()
     }
     return $h({
-        level: node.getAttribute('level') + 1, id: node.getId()
+        level: node.getAttribute('level') + 1,
+        id: node.getId(),
+        class: node.getRole()
     }, content);
 }
