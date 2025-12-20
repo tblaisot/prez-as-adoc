@@ -1,6 +1,9 @@
 const {resolve} = require("path");
 const {readFileSync, existsSync} = require("fs");
-const {$, isEmptyString} = require("@tblaisot/asciidoctorjs-templates-js/helpers");
+const {$, isEmptyString, data_attributes} = require("@tblaisot/asciidoctorjs-templates-js/helpers");
+const {debugAST} = require("../extensions/slides_treeprocessor");
+
+const NO_TITLE = '!';
 
 function resolveTemplate(paths, templateName) {
     // find in folders
@@ -51,7 +54,8 @@ module.exports = function ({node}) {
                 'slide',
                 template,
                 node.getRole()
-            ]
+            ],
+            ...data_attributes(node)
         },
         slideContent + notesContent
     );
