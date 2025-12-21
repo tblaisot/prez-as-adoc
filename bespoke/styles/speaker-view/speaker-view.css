@@ -1,0 +1,373 @@
+/**
+ * Speaker View Styles
+ * Styles for the speaker view window
+ */
+
+:root {
+    /* Background colors */
+    --speaker-bg-primary: #1a1a1a;
+    --speaker-bg-secondary: #2a2a2a;
+
+    /* Text colors */
+    --speaker-text-primary: #e0e0e0;
+    --speaker-text-secondary: #888;
+    --speaker-text-heading: #fff;
+    --speaker-text-button: white;
+
+    /* Accent colors */
+    --speaker-accent-primary: #4a9eff;
+    --speaker-accent-hover: #3a8eef;
+    --speaker-accent-active: #2a7edf;
+
+    /* Border colors */
+    --speaker-border: #444;
+
+    /* Scrollbar colors */
+    --speaker-scrollbar-track: #1a1a1a;
+    --speaker-scrollbar-thumb: #555;
+    --speaker-scrollbar-thumb-hover: #666;
+
+    /* Shadow colors */
+    --speaker-shadow-light: rgba(0, 0, 0, 0.2);
+    --speaker-shadow-medium: rgba(0, 0, 0, 0.3);
+    --speaker-shadow-accent: rgba(74, 158, 255, 0.4);
+}
+
+.speaker-view-body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: var(--speaker-bg-primary);
+    color: var(--speaker-text-primary);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+.speaker-view-container {
+    display: grid;
+    grid-template-columns: 1fr 5fr 4fr;
+    gap: 1rem;
+    padding: 1rem;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Left Column - Slides List (1/10 width) */
+.speaker-view-slides-column {
+    background: var(--speaker-bg-secondary);
+    border-radius: 8px;
+    padding: 0.5rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 4px 6px var(--speaker-shadow-medium);
+}
+
+.speaker-view-slides-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.speaker-view-slide-thumb {
+    flex-shrink: 0;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 4px var(--speaker-shadow-light);
+}
+
+.speaker-view-slide-thumb:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px var(--speaker-shadow-medium);
+}
+
+.speaker-view-slide-thumb-active {
+    outline: 3px solid var(--speaker-accent-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--speaker-bg-primary), 0 4px 8px var(--speaker-shadow-accent);
+}
+
+.speaker-view-slide-thumb > div {
+    pointer-events: none;
+}
+
+.speaker-view-slides-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.speaker-view-slides-list::-webkit-scrollbar-track {
+    background: var(--speaker-scrollbar-track);
+    border-radius: 4px;
+}
+
+.speaker-view-slides-list::-webkit-scrollbar-thumb {
+    background: var(--speaker-scrollbar-thumb);
+    border-radius: 4px;
+}
+
+.speaker-view-slides-list::-webkit-scrollbar-thumb:hover {
+    background: var(--speaker-scrollbar-thumb-hover);
+}
+
+/* Middle Column - Current and Next Slides (5/10 width) */
+.speaker-view-main-column {
+    display: grid;
+    grid-template-rows: 2fr 1fr;
+    gap: 1rem;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.speaker-view-current-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--speaker-bg-secondary);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px var(--speaker-shadow-medium);
+    min-height: 0;
+}
+
+.speaker-view-next-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--speaker-bg-secondary);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px var(--speaker-shadow-medium);
+    min-height: 0;
+}
+
+.speaker-view-slide-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Right Column - Timer and Notes (4/10 width) */
+.speaker-view-info-column {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.speaker-view-timer-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--speaker-bg-secondary);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px var(--speaker-shadow-medium);
+}
+
+.speaker-view-timer-display {
+    font-size: 2.5rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--speaker-accent-primary);
+    text-shadow: 0 2px 4px var(--speaker-shadow-medium);
+}
+
+.speaker-view-time-display {
+    font-size: 1.2rem;
+    color: var(--speaker-text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+.speaker-view-page-indicator {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--speaker-text-secondary);
+}
+
+.speaker-view-timer-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.speaker-view-btn {
+    padding: 0.5rem 1rem;
+    background: var(--speaker-accent-primary);
+    color: var(--speaker-text-button);
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.speaker-view-btn:hover {
+    background: var(--speaker-accent-hover);
+}
+
+.speaker-view-btn:active {
+    background: var(--speaker-accent-active);
+}
+
+.speaker-view-notes-section {
+    display: flex;
+    flex-direction: column;
+    background: var(--speaker-bg-secondary);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px var(--speaker-shadow-medium);
+}
+
+.speaker-view-notes-section .speaker-notes {
+    display: block
+}
+
+/* Labels */
+.speaker-view-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--speaker-text-secondary);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--speaker-border);
+}
+
+/* Slide wrapper for scaling */
+.speaker-view-slide-wrapper {
+    --slide-ratio: calc(16 / 9);
+    --slide-width: 1280px;
+    --slide-height: calc(var(--slide-width) / var(--slide-ratio));
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    overflow: hidden;
+    margin-top: calc(var(--slide-height) / 2 * -1);
+    margin-left: calc(var(--slide-width) / 2 * -1);
+    width: var(--slide-width);
+    height: var(--slide-height);
+}
+
+.speaker-view-slide-thumb-wrapper {
+    transform: scale(var(--thumb-slide-scale));
+}
+
+.speaker-view-slide-current-wrapper {
+    transform: scale(var(--current-slide-scale));
+}
+
+.speaker-view-slide-next-wrapper {
+    transform: scale(var(--next-slide-scale));
+}
+
+
+
+/* Cloned Slides - keep original slide styles intact */
+.speaker-view-slide-clone {
+}
+
+/* Notes Content */
+.speaker-view-notes-content {
+    flex: 1;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--speaker-text-primary);
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.speaker-view-notes-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.speaker-view-notes-content::-webkit-scrollbar-track {
+    background: var(--speaker-scrollbar-track);
+    border-radius: 4px;
+}
+
+.speaker-view-notes-content::-webkit-scrollbar-thumb {
+    background: var(--speaker-scrollbar-thumb);
+    border-radius: 4px;
+}
+
+.speaker-view-notes-content::-webkit-scrollbar-thumb:hover {
+    background: var(--speaker-scrollbar-thumb-hover);
+}
+
+.speaker-view-notes-content em {
+    color: var(--speaker-text-secondary);
+    font-style: italic;
+}
+
+.speaker-view-notes-content p {
+    margin: 0.5rem 0;
+}
+
+.speaker-view-notes-content ul,
+.speaker-view-notes-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.speaker-view-notes-content h1,
+.speaker-view-notes-content h2,
+.speaker-view-notes-content h3 {
+    margin: 1rem 0 0.5rem 0;
+    color: var(--speaker-text-heading);
+}
+
+/* No Next Slide Message */
+.speaker-view-no-next {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--speaker-text-secondary);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+    .speaker-view-timer-display {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .speaker-view-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
+    .speaker-view-slides-column {
+        grid-row: 1;
+        max-height: 200px;
+    }
+
+    .speaker-view-main-column {
+        grid-row: 2;
+    }
+
+    .speaker-view-info-column {
+        grid-row: 3;
+    }
+}

@@ -65,7 +65,7 @@ The core extension that transforms a hierarchical AsciiDoc document into a flat 
 
 . *Create title slide*:
 ** Extract document title and subtitle
-** Create a special slide with `slide-template="title-slide"`
+** Create a special slide with `slide-template="deck-title"`
 ** Add preamble content to title slide
 ** Insert title slide at the beginning
 
@@ -117,7 +117,7 @@ Nested content becomes a separate slide.
 [source,text]
 ----
 Document
-├── Slide (template=title-slide, level=0)
+├── Slide (template=deck-title, level=0)
 │   ├── Title: "My Presentation"
 │   └── Preamble
 ├── Slide (level=1)
