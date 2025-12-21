@@ -1,3 +1,7 @@
+/**
+ * Debug Styles
+ */
+
 .bespoke-parent.bespoke-debug .bespoke-slide {
     outline: 1px solid blue;
 }
