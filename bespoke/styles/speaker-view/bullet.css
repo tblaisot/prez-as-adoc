@@ -1,0 +1,15 @@
+/**
+ * Speaker View Styles for bullets
+ */
+
+.speaker-view-slides-column .bespoke-bullet.bespoke-bullet-inactive {
+    opacity: 1;
+}
+
+.speaker-view-current-section .bespoke-bullet.bespoke-bullet-inactive {
+    opacity: 0.7;
+}
+
+.speaker-view-next-section .bespoke-bullet.bespoke-bullet-inactive {
+    opacity: 1;
+}
