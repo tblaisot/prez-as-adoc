@@ -127,20 +127,20 @@ The third layer provides tooling for development and production builds.
 ----
 Input AsciiDoc:
   = My Presentation
-  
+
   Preamble content
-  
+
   == First Slide
-  
+
   Content here
-  
+
   == Second Slide
-  
+
   More content
 
 Tree Processor Output:
   Document
-  ├── Slide (level=0, template=title-slide)
+  ├── Slide (level=0, template=deck-title)
   │   ├── Title: "My Presentation"
   │   └── Preamble content
   ├── Slide (level=1)
@@ -157,9 +157,9 @@ Tree Processor Output:
 ----
 Input:
   == Slide Title
-  
+
   Visible content
-  
+
   [.notes]
   ****
   These are speaker notes
@@ -208,12 +208,12 @@ export function pluginName(options = {}) {
         // - deck.slide(): Get/set current slide
         // - deck.on(event, handler): Listen to events
         // - deck.addKeyHandler(key, handler): Add keyboard shortcuts
-        
+
         // Event listeners
         deck.on('activate', (event) => {
             // Runs when a slide becomes active
         });
-        
+
         deck.on('destroy', () => {
             // Cleanup
         });
