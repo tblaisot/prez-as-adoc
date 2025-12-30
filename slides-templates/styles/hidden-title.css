@@ -1,0 +1,12 @@
+
+.slide.hidden-title {
+    grid-template-rows: 1fr;
+}
+
+.slide.hidden-title .slot-title {
+    display: none;
+}
+
+.slide.hidden-title .slot-content {
+    grid-row: 1;
+}

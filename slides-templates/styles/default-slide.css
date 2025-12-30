@@ -1,0 +1,47 @@
+/* Base slide container - fixed layout */
+.slide {
+    box-sizing: border-box;
+    font-size: var(--slide-font-size);
+    font-family: var(--slide-font-family);
+    font-weight: var(--slide-font-weight);
+    line-height: 1;
+}
+
+/* Single column layout (default-slide) */
+.slide {
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr;
+    gap: calc(2*var(--slide-content-gap));
+    padding: var(--slide-padding);
+}
+
+.slide .slot-title {
+    grid-row: 1;
+    grid-column: 1;
+}
+
+.slide .slot-title h2,
+.slide .slot-title h3,
+.slide .slot-title h4,
+.slide .slot-title h5,
+.slide .slot-title h6 {
+    color: var(--slide-title-color);
+    font-size: var(--slide-title-font-size);
+    font-family: var(--slide-title-font-family);
+    line-height: 1;
+    font-weight: var(--slide-title-font-weight);
+}
+
+.slide .slot-content {
+    grid-row: 2;
+    grid-column: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: var(--list-gap);
+}
+
+.slide.hidden-title .slot-title {
+    display: none;
+}

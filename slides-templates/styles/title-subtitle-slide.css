@@ -1,0 +1,27 @@
+/* Title slide layout */
+.slide.title-subtitle
+{
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+
+    /* Horizontal Centering */
+    justify-items: center;
+
+    /* Vertical Centering */
+    align-content: center;      /* Centers the entire grid group vertically */
+
+    gap: calc(var(--slide-content-gap));
+}
+
+.slide.title-subtitle .slot-title {
+    --slide-title-font-size: var(--slide-titleonly-font-size);
+}
+
+.slide.title-subtitle .slot-content {
+    color: var(--slide-subtitle-color);
+    font-family: var(--slide-subtitle-font-family);
+    font-size: var(--slide-subtitle-font-size);
+    line-height: var(--slide-subtitle-line-height);
+    font-weight: var(--slide-subtitle-font-weight);
+}
+
