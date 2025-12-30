@@ -6,11 +6,13 @@
     "type": "git",
     "url": "https://github.com/tblaisot/prez-as-adoc.git"
   },
+  "main": "index.js",
   "type": "module",
   "bin": {
     "prez-as-adoc": "bin/prez-as-adoc.js"
   },
   "exports": {
+    ".": "./index.js",
     "./asciidoctor/extensions": {
       "import": "./asciidoctor/extensions/index.js"
     },
@@ -22,6 +24,9 @@
     },
     "./bespoke/styles/main.css": {
       "import": "./bespoke/styles/main.css"
+    },
+    "./slides-templates/styles/main.css": {
+      "import": "./slides-templates/styles/main.css"
     }
   },
   "keywords": [
