@@ -1,0 +1,101 @@
+/* Base admonition block styles */
+.admonition-block,
+aside.admonition-block,
+section.admonition-block {
+    margin: 1em 0;
+    padding: 0.75em 1em;
+    border-left: 4px solid;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
+}
+
+/* Block title */
+.admonition-block .block-title {
+    margin: 0 0 0.5em 0;
+    font-weight: bold;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.admonition-block .block-title.label-only {
+    margin-bottom: 0.5em;
+}
+
+.admonition-block .title-label {
+    font-weight: bold;
+}
+
+/* Content styling */
+.admonition-block p {
+    margin: 0.5em 0 0 0;
+    font-size: 0.6em;
+}
+
+.admonition-block p:first-child {
+    margin-top: 0;
+}
+
+.admonition-block p:last-child {
+    margin-bottom: 0;
+}
+
+/* NOTE admonition */
+.admonition-block.note,
+aside.admonition-block.note,
+section.admonition-block.note {
+    border-left-color: #19407c;
+    background-color: rgba(25, 64, 124, 0.1);
+}
+
+.admonition-block.note .title-label {
+    color: #19407c;
+}
+
+/* TIP admonition */
+.admonition-block.tip,
+aside.admonition-block.tip,
+section.admonition-block.tip {
+    border-left-color: #006600;
+    background-color: rgba(0, 102, 0, 0.1);
+}
+
+.admonition-block.tip .title-label {
+    color: #006600;
+}
+
+/* IMPORTANT admonition */
+.admonition-block.important,
+aside.admonition-block.important,
+section.admonition-block.important {
+    border-left-color: #bf6900;
+    background-color: rgba(191, 105, 0, 0.1);
+}
+
+.admonition-block.important .title-label {
+    color: #bf6900;
+}
+
+/* WARNING admonition */
+.admonition-block.warning,
+aside.admonition-block.warning,
+section.admonition-block.warning {
+    border-left-color: #bf6900;
+    background-color: rgba(191, 105, 0, 0.1);
+}
+
+.admonition-block.warning .title-label {
+    color: #bf6900;
+}
+
+/* CAUTION admonition */
+.admonition-block.caution,
+aside.admonition-block.caution,
+section.admonition-block.caution {
+    border-left-color: #b52e31;
+    background-color: rgba(181, 46, 49, 0.1);
+}
+
+.admonition-block.caution .title-label {
+    color: #b52e31;
+}

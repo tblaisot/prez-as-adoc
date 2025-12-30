@@ -1,0 +1,75 @@
+/* Print styles for PDF generation - 1 slide per page */
+
+@page {
+  size: A4 landscape;
+  margin: 1cm;
+}
+
+/* Hide navigation and non-essential elements */
+@media print {
+  /* Hide bespoke.js navigation elements */
+  .bespoke-progress-parent,
+  .bespoke-progress-bar,
+  .bespoke-backdrop {
+    display: none !important;
+  }
+
+  /* Reset body and container for print */
+  body {
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  /* Slides container - remove any positioning */
+  .bespoke-parent,
+  .slides {
+    position: static;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+
+  /* Each slide should be on its own page */
+  .bespoke-slide {
+    position: relative;
+    page-break-after: always;
+    page-break-inside: avoid;
+    width: 100%;
+    min-height: calc(100vh - 2cm);
+    height: auto;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: visible !important;
+    break-after: page;
+    break-inside: avoid;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Slide content inside bespoke-slide */
+  .bespoke-slide > .slide,
+  .slide {
+    position: relative;
+    page-break-inside: avoid;
+    width: 100%;
+    min-height: calc(100vh - 2cm);
+    height: auto;
+    margin: 0;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    display: grid;
+    overflow: visible;
+    break-inside: avoid;
+  }
+
+  /* Hide any active/inactive states */
+  .bespoke-active,
+  .bespoke-inactive {
+    opacity: 1 !important;
+    display: block !important;
+  }
+}

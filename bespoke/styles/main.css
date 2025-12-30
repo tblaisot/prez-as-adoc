@@ -2,11 +2,15 @@
 
 @import url("./deck/deck.css");
 @import url("./slide/slide.css");
+
 @import url("./blocks/progress.css");
+
 @import url("./bullets/bullets.css");
 
 @import url("./speaker-view/speaker-view.css");
 @import url("./speaker-view/bullet.css");
 @import url("./speaker-notes/speaker-notes.css");
+
+@import url("./print/print.css");
 
 @import url("./debug.css");

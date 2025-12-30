@@ -4,12 +4,7 @@
 @import './slide-list.css' screen;
 @import './slide-full.css' screen;
 
-/*.slides {*/
-/*    --slide-ratio: calc(16 / 9);*/
-/*}*/
-
 /* Slide */
-
 .bespoke-slide {
     display: grid;
     position: absolute;

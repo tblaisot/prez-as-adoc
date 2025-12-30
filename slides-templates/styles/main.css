@@ -1,0 +1,8 @@
+@import "./variables.css";
+@import "./default-slide.css";
+@import "./hidden-title.css";
+@import "./deck-title-slide.css";
+@import "./title-only-slide.css";
+@import "./title-subtitle-slide.css";
+@import "./two-columns-slide.css";
+@import "./two-columns-title-slide.css";
