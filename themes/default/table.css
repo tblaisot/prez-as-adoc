@@ -1,0 +1,15 @@
+.table-block table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table-block td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.table-block tr:nth-child(even) {
+    background-color: #dddddd;
+}
