@@ -345,7 +345,21 @@
     font-size: 0.9rem;
 }
 
-/* Responsive adjustments */
+/* Remove all animations */
+.speaker-view-body .bespoke-slide {
+    transition: none;
+}
+.speaker-view-body .bespoke-after {
+    transform: none;
+}
+.speaker-view-body .bespoke-before {
+    transform: none;
+}
+.speaker-view-body .bespoke-active {
+    transform: none
+}
+
+/* FIXME Responsive adjustments */
 @media (max-width: 1400px) {
     .speaker-view-timer-display {
         font-size: 2rem;

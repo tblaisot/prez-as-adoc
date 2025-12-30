@@ -24,7 +24,7 @@
     display: block;
     width: 100%;
     height: var(--progress-size);
-    background-color: var(--color-blue);
+    background-color: var(--progress-color);
     content: '';
     transform-origin: 0 100%;
     transform: skewX(45deg);

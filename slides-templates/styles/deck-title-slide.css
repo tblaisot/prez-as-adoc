@@ -1,0 +1,18 @@
+/* Title slide layout */
+.slide.deck-title {
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
+    align-items: center;
+    justify-items: center;
+}
+
+.slide.deck-title .slot-title {
+    grid-row: 1;
+    grid-column: 1;
+    text-align: center;
+    --slide-title-font-size: var(--slide-titleonly-font-size);
+}
+
+.slide.deck-title .slot-content {
+    display: none;
+}

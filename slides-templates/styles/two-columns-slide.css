@@ -1,0 +1,45 @@
+
+/* Two column layout */
+.slide.two-columns .slot-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--slide-content-gap);
+}
+
+.slide.two-columns .slot-content .slot-column {
+  overflow: auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--slide-content-gap);
+}
+
+/* Two column ratio variants */
+.slide.two-columns.ratio-1-1 .slot-content {
+    grid-template-columns: 1fr 1fr;
+}
+
+.slide.two-columns.ratio-1-2 .slot-content {
+  grid-template-columns: 1fr 2fr;
+}
+
+.slide.two-columns.ratio-2-1 .slot-content {
+  grid-template-columns: 2fr 1fr;
+}
+
+.slide.two-columns.ratio-1-3 .slot-content {
+  grid-template-columns: 1fr 3fr;
+}
+
+.slide.two-columns.ratio-3-1 .slot-content {
+  grid-template-columns: 3fr 1fr;
+}
+
+.slide .slot-column:has(> .image-block:only-child) {
+  display: grid;
+  place-items: center; /* Shorthand for horizontal and vertical centering */
+
+  /* Ensure the column has height to center within, if not already set */
+  min-height: 100%;
+}
