@@ -8,6 +8,11 @@
     );
 }
 
+.bespoke-parent.bespoke-list .bespoke-slide {
+    transition: none;
+}
+
+
 .bespoke-parent.bespoke-list .bespoke-slide * {
     pointer-events: none;
 }

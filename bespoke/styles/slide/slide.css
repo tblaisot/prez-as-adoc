@@ -7,7 +7,6 @@
 /* Slide */
 .bespoke-slide {
     display: grid;
-    position: absolute;
     z-index: 1;
     overflow: hidden;
     box-sizing: border-box;
