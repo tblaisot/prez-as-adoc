@@ -4,7 +4,6 @@ export {speakerView} from './bespoke-speaker-view.js';
 export {classes} from './bespoke-classes.js';
 export {progress} from './bespoke-progress.js';
 export {debug} from './bespoke-debug.js';
-export {editor} from './bespoke-editor.js';
 export {hash} from './bespoke-hash.js';
 export {viewMode} from './bespoke-view-mode.js';
 export {highlight} from './bespoke-highlight.js';
