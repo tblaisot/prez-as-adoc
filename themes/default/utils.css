@@ -1,0 +1,15 @@
+.v-center .slot-content {
+    display: flex;
+    justify-content: center;
+}
+
+.h-center .slot-content {
+    display: flex;
+    align-items: center;
+}
+
+.vh-center .slot-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
