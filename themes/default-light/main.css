@@ -1,0 +1,58 @@
+@import url('highlight.js/styles/github.css');
+
+:root {
+    /* ***************************************
+    *   Main View
+    * ************************************** */
+
+    /* Bady base colors (Visible during transitions) */
+    --body-background-color: #f5f5f5;
+
+    /* Slide base colors */
+    --slide-text-color: #000;
+    --slide-background-color: #f5f5f5;
+
+
+    /* ***************************************
+    *   Speaker View
+    * ************************************** */
+
+    /* Background colors */
+    --speaker-bg-primary: #f5f5f5;
+    --speaker-bg-secondary: #fff;
+
+    /* Text colors */
+    --speaker-text-primary: #333;
+    --speaker-text-secondary: #666;
+    --speaker-text-heading: #000;
+    --speaker-text-button: #333;
+
+    /* Accent colors */
+    --speaker-accent-primary: #007bff;
+    --speaker-accent-hover: #0056b3;
+    --speaker-accent-active: #004085;
+
+    /* Border colors */
+    --speaker-border: #ddd;
+
+    /* Scrollbar colors */
+    --speaker-scrollbar-track: #f5f5f5;
+    --speaker-scrollbar-thumb: #ccc;
+    --speaker-scrollbar-thumb-hover: #bbb;
+
+    /* Shadow colors */
+    --speaker-shadow-light: rgba(0, 0, 0, 0.05);
+    --speaker-shadow-medium: rgba(0, 0, 0, 0.1);
+    --speaker-shadow-accent: rgba(0, 123, 255, 0.2);
+
+    /* ***************************************
+*   Tables
+* ************************************** */
+    --table-row-border-color: #444;
+    --table-row-bgcolor-header: #a5a5a5;
+    --table-row-color-header: #000;
+    --table-row-bgcolor-even: #f5f5f5;
+    --table-row-color-even: #000;
+    --table-row-bgcolor-odd: #f5f5f5;
+    --table-row-color-odd: #000;
+}
