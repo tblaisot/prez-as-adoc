@@ -1,0 +1,8 @@
+body {
+    background-color: var(--body-background-color);
+}
+
+.slide {
+    background-color: var(--slide-background-color);
+    color: var(--slide-text-color);
+}

@@ -3,35 +3,35 @@
  * Styles for the speaker view window
  */
 
-:root {
-    /* Background colors */
-    --speaker-bg-primary: #1a1a1a;
-    --speaker-bg-secondary: #2a2a2a;
+/*:root {*/
+/*    !* Background colors *!*/
+/*    --speaker-bg-primary: #1a1a1a;*/
+/*    --speaker-bg-secondary: #2a2a2a;*/
 
-    /* Text colors */
-    --speaker-text-primary: #e0e0e0;
-    --speaker-text-secondary: #888;
-    --speaker-text-heading: #fff;
-    --speaker-text-button: white;
+/*    !* Text colors *!*/
+/*    --speaker-text-primary: #e0e0e0;*/
+/*    --speaker-text-secondary: #888;*/
+/*    --speaker-text-heading: #fff;*/
+/*    --speaker-text-button: white;*/
 
-    /* Accent colors */
-    --speaker-accent-primary: #4a9eff;
-    --speaker-accent-hover: #3a8eef;
-    --speaker-accent-active: #2a7edf;
+/*    !* Accent colors *!*/
+/*    --speaker-accent-primary: #4a9eff;*/
+/*    --speaker-accent-hover: #3a8eef;*/
+/*    --speaker-accent-active: #2a7edf;*/
 
-    /* Border colors */
-    --speaker-border: #444;
+/*    !* Border colors *!*/
+/*    --speaker-border: #444;*/
 
-    /* Scrollbar colors */
-    --speaker-scrollbar-track: #1a1a1a;
-    --speaker-scrollbar-thumb: #555;
-    --speaker-scrollbar-thumb-hover: #666;
+/*    !* Scrollbar colors *!*/
+/*    --speaker-scrollbar-track: #1a1a1a;*/
+/*    --speaker-scrollbar-thumb: #555;*/
+/*    --speaker-scrollbar-thumb-hover: #666;*/
 
-    /* Shadow colors */
-    --speaker-shadow-light: rgba(0, 0, 0, 0.2);
-    --speaker-shadow-medium: rgba(0, 0, 0, 0.3);
-    --speaker-shadow-accent: rgba(74, 158, 255, 0.4);
-}
+/*    !* Shadow colors *!*/
+/*    --speaker-shadow-light: rgba(0, 0, 0, 0.2);*/
+/*    --speaker-shadow-medium: rgba(0, 0, 0, 0.3);*/
+/*    --speaker-shadow-accent: rgba(74, 158, 255, 0.4);*/
+/*}*/
 
 .speaker-view-body {
     margin: 0;
