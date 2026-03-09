@@ -1,7 +1,6 @@
 /* Shower List */
 
 .bespoke-parent.bespoke-list {
-
     --deck-list-block: calc(
         var(--slide-gap) *
         var(--slide-scale)
@@ -48,13 +47,13 @@
 
 @media (min-width: 1174px) {
     .bespoke-parent.bespoke-list {
-        --slide-scale: 0.5;
+        --slide-scale: 0.25;
     }
 }
 
 @media (min-width: 2348px) {
     .bespoke-parent.bespoke-list {
-        --slide-scale: 1;
+        --slide-scale: 0.5;
     }
 }
 
