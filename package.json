@@ -28,8 +28,8 @@
     "./slides-templates/styles/main.css": {
       "import": "./slides-templates/styles/main.css"
     },
-    "./themes/default/main.css": {
-      "import": "./themes/default/main.css"
+    "./themes/*": {
+      "import": "./themes/*"
     }
   },
   "keywords": [

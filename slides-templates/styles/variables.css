@@ -13,25 +13,25 @@
 
     /*  Slides */
     --slide-padding: 4vh;
-    --slide-text-color: black;
-    --slide-background-color: white;
+    /*--slide-text-color: black;*/
+    /*--slide-background-color: white;*/
     --slide-content-gap: 4vh;
     --slide-font-family: var(--default-font-family);
     --slide-font-weight: 400;
     --slide-font-size: var(--default-font-size);
 
     --slide-titleonly-font-family: var(--default-font-family);
-    --slide-titleonly-color: black;
+    --slide-titleonly-color: var(--slide-text-color);
     --slide-titleonly-font-weight: 800;
     --slide-titleonly-font-size: 10vh;
 
     --slide-title-font-family: var(--default-font-family);
-    --slide-title-color: black;
+    --slide-title-color: var(--slide-text-color);
     --slide-title-font-weight: 800;
     --slide-title-font-size: 6vh;
 
     --slide-subtitle-font-family: var(--default-font-family);
-    --slide-subtitle-color: black;
+    --slide-subtitle-color: var(--slide-text-color);
     --slide-subtitle-font-weight: 600;
     --slide-subtitle-font-size: 5vh;
     --slide-subtitle-line-height: 1.5;
