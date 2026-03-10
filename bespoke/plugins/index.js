@@ -2,6 +2,7 @@ export {scale} from './bespoke-scale.js';
 export {nav} from './bespoke-nav.js';
 export {speakerView} from './bespoke-speaker-view.js';
 export {classes} from './bespoke-classes.js';
+export {bullets} from './bespoke-bullets.js';
 export {progress} from './bespoke-progress.js';
 export {debug} from './bespoke-debug.js';
 export {hash} from './bespoke-hash.js';
