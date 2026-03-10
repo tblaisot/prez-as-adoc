@@ -5,6 +5,6 @@
     opacity: 0;
 }
 
-/*.bespoke-parent.bespoke-list .bespoke-bullet.bespoke-bullet-inactive {*/
-/*    opacity: 1;*/
-/*}*/
+.bespoke-parent.bespoke-list .bespoke-bullet.bespoke-bullet-inactive {
+    opacity: 0.1;
+}

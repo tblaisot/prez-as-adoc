@@ -14,6 +14,7 @@ const MESSAGE_TYPES = {
     WINDOW_READY: 'WINDOW_READY',
     KEYDOWN: 'KEYDOWN',
     NAVIGATE_TO_SLIDE: 'NAVIGATE_TO_SLIDE',
+    BULLET_CHANGE: 'BULLET_CHANGE',
 };
 
 export function speakerView(config = {}) {
@@ -86,7 +87,8 @@ function initializeMainWindow(deck, config) {
     }
 
     // Broadcast slide change
-    function broadcastSlideChange() {
+    function broadcastSlideChange(event) {
+        console.log('[DEBUG_LOG] broadcastSlideChange index:', event.index);
         const index = deck.slide();
         const currentSlide = deck.slides[index];
         const notes = currentSlide ? currentSlide.querySelectorAll(notesSelector) : [];
@@ -94,12 +96,25 @@ function initializeMainWindow(deck, config) {
 
         const message = {
             type: MESSAGE_TYPES.SLIDE_CHANGE,
-            index,
+            index: event.index,
             totalSlides: deck.slides.length,
             notes: notesContent,
+            bulletIndex: 0,
         };
 
         sendMessage(channel, message);
+    }
+
+    // Broadcast bullet change
+    function broadcastBulletChange(event) {
+        console.log('[DEBUG_LOG] broadcastBulletChange index:', event.bulletIndex);
+        const index = deck.slide();
+        let bulletIndex = event.bulletIndex + 1;
+
+        sendMessage(channel, {
+            type: MESSAGE_TYPES.BULLET_CHANGE,
+            bulletIndex: bulletIndex - 1,
+        });
     }
 
     // Broadcast timer start
@@ -136,6 +151,14 @@ function initializeMainWindow(deck, config) {
                 const currentSlide = deck.slides[index];
                 const notes = currentSlide ? currentSlide.querySelectorAll(notesSelector) : [];
 
+                // Get current bullet index if bespoke-bullets is used
+                let bulletIndex = 0;
+                const bullets = currentSlide ? Array.from(currentSlide.querySelectorAll('.bespoke-bullet, [data-step], .olist[data-step] li, .ulist[data-step] li')) : [];
+                const activeBullet = currentSlide ? currentSlide.querySelector('.bespoke-bullet-active:last-of-type') : null;
+                if (activeBullet) {
+                    bulletIndex = bullets.indexOf(activeBullet) + 1;
+                }
+
                 sendMessage(channel, {
                     type: MESSAGE_TYPES.SYNC_RESPONSE,
                     index,
@@ -143,6 +166,7 @@ function initializeMainWindow(deck, config) {
                     notes: Array.from(notes).map(n => n.outerHTML).join(''),
                     timerStartTime,
                     timerPaused,
+                    bulletIndex,
                 });
                 break;
 
@@ -195,8 +219,13 @@ function initializeMainWindow(deck, config) {
     }
 
     // Listen to slide changes
-    deck.on('activate', () => {
-        broadcastSlideChange();
+    deck.on('activate', (event) => {
+        broadcastSlideChange(event);
+    });
+
+    // Listen to bullet changes
+    deck.on('bullet', (event) => {
+        broadcastBulletChange(event);
     });
 
     // Start timer on first slide activation
@@ -238,6 +267,7 @@ function initializeSpeakerWindow(deck, config) {
     }
 
     let currentIndex = 0;
+    let currentBulletIndex = 0;
     let totalSlides = 0;
     let timerStartTime = null;
     let timerPaused = false;
@@ -407,6 +437,9 @@ function initializeSpeakerWindow(deck, config) {
             wrapper.appendChild(clone);
             currentSlideContent.innerHTML = '';
             currentSlideContent.appendChild(wrapper);
+
+            // Apply bullet state
+            updateBullets();
         }
 
         // Update next slide
@@ -444,6 +477,25 @@ function initializeSpeakerWindow(deck, config) {
 
         // Recalculate scales after slides are updated
         initializeScales();
+    }
+
+    // Update bullet displays in current slide
+    function updateBullets() {
+        const currentSlideContent = document.getElementById('speaker-current-slide');
+        if (!currentSlideContent) return;
+
+        // console.log('[DEBUG_LOG] updateBullets currentBulletIndex:', currentBulletIndex);
+        const bullets = Array.from(currentSlideContent.querySelectorAll('.bespoke-bullet, [data-step], .olist[data-step] li, .ulist[data-step] li'));
+        // console.log('[DEBUG_LOG] updateBullets found bullets:', bullets.length);
+        bullets.forEach((bullet, index) => {
+            if (index < currentBulletIndex) {
+                bullet.classList.add('bespoke-bullet-active');
+                bullet.classList.remove('bespoke-bullet-inactive');
+            } else {
+                bullet.classList.add('bespoke-bullet-inactive');
+                bullet.classList.remove('bespoke-bullet-active');
+            }
+        });
     }
 
     // Update slides list in footer
@@ -616,6 +668,7 @@ function initializeSpeakerWindow(deck, config) {
         switch (message.type) {
             case MESSAGE_TYPES.SLIDE_CHANGE:
                 currentIndex = message.index || 0;
+                currentBulletIndex = message.bulletIndex || 0;
                 totalSlides = message.totalSlides || 0;
                 updateSlides();
                 updateNotes(message.notes || '');
@@ -624,6 +677,7 @@ function initializeSpeakerWindow(deck, config) {
 
             case MESSAGE_TYPES.SYNC_RESPONSE:
                 currentIndex = message.index || 0;
+                currentBulletIndex = message.bulletIndex || 0;
                 totalSlides = message.totalSlides || 0;
                 updateSlides();
                 updateNotes(message.notes || '');
@@ -635,6 +689,12 @@ function initializeSpeakerWindow(deck, config) {
                     timerPauseTime = message.timerPauseTime || null;
                     startTimerUpdates();
                 }
+                break;
+
+            case MESSAGE_TYPES.BULLET_CHANGE:
+                // console.log('[DEBUG_LOG] handleMessage BULLET_CHANGE index:', message.index);
+                currentBulletIndex = (message.bulletIndex || 0);
+                updateBullets();
                 break;
 
             case MESSAGE_TYPES.TIMER_START:
