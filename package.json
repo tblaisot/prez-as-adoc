@@ -1,6 +1,6 @@
 {
   "name": "@tblaisot/prez-as-adoc",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A project to generate Bespoke slide deck form adoc.",
   "repository": {
     "type": "git",
@@ -46,6 +46,5 @@
     "asciidoctor": "^3.0.4",
     "vite": "^7.2.2"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
