@@ -17,11 +17,13 @@
     --slide-title-font-size: var(--slide-titleonly-font-size);
 }
 
+
 .slide.title-subtitle .slot-content {
     color: var(--slide-subtitle-color);
     font-family: var(--slide-subtitle-font-family);
     font-size: var(--slide-subtitle-font-size);
     line-height: var(--slide-subtitle-line-height);
     font-weight: var(--slide-subtitle-font-weight);
+    text-align: center;
 }
 

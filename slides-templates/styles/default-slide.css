@@ -11,7 +11,8 @@
 .slide {
     grid-template-rows: auto 1fr;
     grid-template-columns: 1fr;
-    gap: calc(2*var(--slide-content-gap));
+    /*gap: calc(2*var(--slide-content-gap));*/
+    gap: 0;
     padding: var(--slide-padding);
 }
 
@@ -40,6 +41,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--list-gap);
+    justify-content: center;
 }
 
 .slide.hidden-title .slot-title {

@@ -10,6 +10,7 @@
 
     /*  Tailles de police */
     --default-font-size: 3vh;
+    --default-line-height: 1.5em;
 
     /*  Slides */
     --slide-padding: 4vh;

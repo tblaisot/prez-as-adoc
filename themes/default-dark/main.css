@@ -56,4 +56,10 @@
     --table-row-color-even: #e0e0e0;
     --table-row-bgcolor-odd: #212529;
     --table-row-color-odd: #e0e0e0;
+
+    /* ***************************************
+    *   Code Listing
+    * ************************************** */
+    --listing-color: #c9d1d9;
+    --listing-bgcolor: #0d1117;
 }
