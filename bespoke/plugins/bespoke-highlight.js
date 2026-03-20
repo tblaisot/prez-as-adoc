@@ -5,7 +5,7 @@ import hljs from 'highlight.js/lib/core';
 function doHighlightAll(){
     document.querySelectorAll('pre.highlight code').forEach((el) => {
         const language = el.getAttribute('data-lang');
-        // hljs.highlightElement(el);
+        if(!language) return;
         el.innerHTML = hljs.highlight(el.innerHTML, {language}).value
     });
 }
@@ -20,4 +20,4 @@ export function highlight (config = {}) {
             }
         });
     };
-};
+}

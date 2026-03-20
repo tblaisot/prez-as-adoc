@@ -7,3 +7,4 @@ export {debug} from './bespoke-debug.js';
 export {hash} from './bespoke-hash.js';
 export {viewMode} from './bespoke-view-mode.js';
 export {highlight} from './bespoke-highlight.js';
+export {bullets} from './bespoke-bullets.js';
