@@ -56,32 +56,47 @@ export function hash() {
             deck.fire('hashchange', _hash);
         }
 
-        function navigateToSlide() {
-            const hash = deck.hash().main;
-            const slideNumberOrName = parseInt(hash, 10);
+        function parseMain(main) {
+            const [slidepart, bulletpart] = main.split(',');
+            return {
+                slidePart: slidepart,
+                bulletIndex: bulletpart !== undefined ? parseInt(bulletpart, 10) : 0,
+            };
+        }
 
-            if (hash) {
+        function navigateToSlide() {
+            const { slidePart, bulletIndex } = parseMain(deck.hash().main);
+            const slideNumberOrName = parseInt(slidePart, 10);
+
+            if (slidePart) {
+                deck._navigatingFromHash = true;
                 if (slideNumberOrName) {
                     activateSlide(slideNumberOrName - 1);
                 } else {
                     deck.slides.forEach(function (slide, i) {
-                        if (slide.getAttribute('data-bespoke-hash') === hash || slide.id === hash) {
+                        if (slide.getAttribute('data-bespoke-hash') === slidePart || slide.id === slidePart) {
                             activateSlide(i);
                         }
                     });
                 }
+                deck.fire('restorebullet', { bulletIndex });
+                deck._navigatingFromHash = false;
             }
         }
 
         setTimeout(() => {
 
-            deck.on('activate', (e) => {
-                const slideName = e.slide.getAttribute('data-bespoke-hash') || e.slide.id;
-                // window.location.hash = slideName || e.index + 1;
-                deck.hash({main: (slideName || e.index + 1)})
+            deck.on('bulletactivate', (e) => {
+                const slide = deck.slides[e.slideIndex];
+                const slideName = slide.getAttribute('data-bespoke-hash') || slide.id;
+                const slidePart = slideName || e.slideIndex + 1;
+                const hashMain = e.bulletIndex > 0
+                    ? `${slidePart},${e.bulletIndex}`
+                    : `${slidePart}`;
+                deck.hash({ main: hashMain });
             });
 
-            deck.on('hashchange', navigateToSlide)
+            deck.on('hashchange', navigateToSlide);
             parseHash();
             window.addEventListener('hashchange', parseHash);
         }, 0);

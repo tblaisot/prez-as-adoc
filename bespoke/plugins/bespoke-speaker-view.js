@@ -95,6 +95,7 @@ function initializeMainWindow(deck, config) {
         const message = {
             type: MESSAGE_TYPES.SLIDE_CHANGE,
             index,
+            bulletIndex: deck._currentBulletIndex || 0,
             totalSlides: deck.slides.length,
             notes: notesContent,
         };
@@ -139,6 +140,7 @@ function initializeMainWindow(deck, config) {
                 sendMessage(channel, {
                     type: MESSAGE_TYPES.SYNC_RESPONSE,
                     index,
+                    bulletIndex: deck._currentBulletIndex || 0,
                     totalSlides: deck.slides.length,
                     notes: Array.from(notes).map(n => n.outerHTML).join(''),
                     timerStartTime,

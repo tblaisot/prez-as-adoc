@@ -2,6 +2,7 @@ export function bullets(options) {
     return function (deck) {
         let activeSlideIndex;
         let activeBulletIndex;
+        let _isRestoringFromHash = false;
 
         let bullets = deck.slides.map(function (slide) {
             return [].slice.call(slide.querySelectorAll((typeof options === 'string' ? options : '[data-bespoke-bullet]')), 0);
@@ -32,6 +33,7 @@ export function bullets(options) {
         function activateBullet(slideIndex, bulletIndex) {
             activeSlideIndex = slideIndex;
             activeBulletIndex = bulletIndex;
+            deck._currentBulletIndex = bulletIndex;
 
             bullets.forEach(function (slide, s) {
                 slide.forEach(function (bullet, b) {
@@ -52,6 +54,10 @@ export function bullets(options) {
                     }
                 });
             });
+
+            if (!_isRestoringFromHash) {
+                deck.fire('bulletactivate', { slideIndex, bulletIndex });
+            }
         }
 
         function activeSlideHasBulletByOffset(offset) {
@@ -61,11 +67,27 @@ export function bullets(options) {
                 && (activeBulletIndex + offset >= 0);
         }
 
+        deck.bullet = () => activeBulletIndex;
+
         deck.on('next', next);
         deck.on('prev', prev);
 
         deck.on('slide', function (e) {
-            activateBullet(e.index, 0);
+            if (!deck._navigatingFromHash) {
+                activateBullet(e.index, 0);
+            } else {
+                // Keep activeSlideIndex in sync without resetting bullet or firing event.
+                // restorebullet will call activateBullet with the correct bulletIndex.
+                activeSlideIndex = e.index;
+            }
+        });
+
+        deck.on('restorebullet', function (e) {
+            const slideBullets = bullets[activeSlideIndex] || [];
+            const clampedIndex = Math.min(e.bulletIndex, slideBullets.length);
+            _isRestoringFromHash = true;
+            activateBullet(activeSlideIndex, clampedIndex);
+            _isRestoringFromHash = false;
         });
 
         activateBullet(0, 0);
