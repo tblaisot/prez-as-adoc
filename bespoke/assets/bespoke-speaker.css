@@ -63,13 +63,11 @@ body {
 
 #present-container, #future-container {
     position: relative;
-    outline: solid red 2px;
 }
 
 #present-container .slide, #future-container .slide {
     clip: auto;
     visibility: visible;
-    outline: solid blue 1px;
 }
 
 /*#present {*/

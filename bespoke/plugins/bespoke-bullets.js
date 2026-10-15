@@ -9,30 +9,22 @@ export function bullets(options) {
 
         function next() {
             const nextSlideIndex = activeSlideIndex + 1;
-            console.log('------------- next -------------------');
-            console.log('next', `slide=${activeSlideIndex}`, `bullet=${activeBulletIndex}/${bullets[activeSlideIndex].length}`);
 
             if (activeSlideHasBulletByOffset(1)) {
-                console.log(`${activeBulletIndex + 1}/${bullets[activeSlideIndex].length}`);
                 activateBullet(activeSlideIndex, activeBulletIndex + 1);
                 return false;
             } else if (bullets[nextSlideIndex]) {
-                console.log(`-> ${nextSlideIndex} | ${-1}`);
                 activateBullet(nextSlideIndex, 0);
             }
         }
 
         function prev() {
             const prevSlideIndex = activeSlideIndex - 1;
-            console.log('-------------- prev ------------------');
-            console.log('prev', `slide=${activeSlideIndex}`, `bullet=${activeBulletIndex}/${bullets[activeSlideIndex].length}`);
 
             if (activeSlideHasBulletByOffset(-1)) {
-                console.log(`${activeBulletIndex - 1}/${bullets[activeSlideIndex].length - 1}`);
                 activateBullet(activeSlideIndex, activeBulletIndex - 1);
                 return false;
             } else if (bullets[prevSlideIndex]) {
-                console.log(`<- ${prevSlideIndex} | ${bullets[prevSlideIndex].length - 1}`);
                 activateBullet(prevSlideIndex, bullets[prevSlideIndex].length);
             }
         }
@@ -40,7 +32,6 @@ export function bullets(options) {
         function activateBullet(slideIndex, bulletIndex) {
             activeSlideIndex = slideIndex;
             activeBulletIndex = bulletIndex;
-            console.log(`slide=${activeSlideIndex}`, `bullet=${activeBulletIndex}/${bullets[activeSlideIndex].length}`);
 
             bullets.forEach(function (slide, s) {
                 slide.forEach(function (bullet, b) {

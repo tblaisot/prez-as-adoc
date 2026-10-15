@@ -11,7 +11,7 @@ const MESSAGE_TYPES = {
     SYNC_RESPONSE: 'SYNC_RESPONSE',
     TIMER_START: 'TIMER_START',
     TIMER_PAUSE: 'TIMER_PAUSE',
-    WINDOW_READY: 'WINDOW_READY',
+    TIMER_RESET: 'TIMER_RESET',
     KEYDOWN: 'KEYDOWN',
     NAVIGATE_TO_SLIDE: 'NAVIGATE_TO_SLIDE',
 };
@@ -146,15 +146,21 @@ function initializeMainWindow(deck, config) {
                 });
                 break;
 
-            case MESSAGE_TYPES.WINDOW_READY:
-                // Speaker window is ready, send initial sync
-                broadcastSlideChange();
-                if (timerStartTime) {
-                    sendMessage(channel, {
-                        type: MESSAGE_TYPES.TIMER_START,
-                        startTime: timerStartTime,
-                    });
-                }
+            case MESSAGE_TYPES.TIMER_START:
+                timerStartTime = message.startTime || Date.now();
+                timerPaused = false;
+                timerPauseTime = null;
+                break;
+
+            case MESSAGE_TYPES.TIMER_PAUSE:
+                timerPaused = true;
+                timerPauseTime = message.pauseTime || Date.now();
+                break;
+
+            case MESSAGE_TYPES.TIMER_RESET:
+                timerStartTime = null;
+                timerPaused = false;
+                timerPauseTime = null;
                 break;
 
             case MESSAGE_TYPES.KEYDOWN:
@@ -197,15 +203,6 @@ function initializeMainWindow(deck, config) {
     // Listen to slide changes
     deck.on('activate', () => {
         broadcastSlideChange();
-    });
-
-    // Start timer on first slide activation
-    let firstActivation = true;
-    deck.on('activate', () => {
-        if (firstActivation) {
-            firstActivation = false;
-            startTimer();
-        }
     });
 
     // Add 's' key handler to open speaker view
@@ -442,8 +439,8 @@ function initializeSpeakerWindow(deck, config) {
         // Update slides list in footer
         updateSlidesList();
 
-        // Recalculate scales after slides are updated
-        initializeScales();
+        // Recalculate scales after browser has laid out the new slide content
+        requestAnimationFrame(() => initializeScales());
     }
 
     // Update slides list in footer
@@ -590,6 +587,7 @@ function initializeSpeakerWindow(deck, config) {
         timerPauseTime = null;
         updateTimer();
         stopTimerUpdates();
+        sendMessage(channel, { type: MESSAGE_TYPES.TIMER_RESET });
     }
 
     // Start timer updates
@@ -669,7 +667,6 @@ function initializeSpeakerWindow(deck, config) {
     // Request sync when ready
     function requestSync() {
         sendMessage(channel, { type: MESSAGE_TYPES.SYNC_REQUEST });
-        sendMessage(channel, { type: MESSAGE_TYPES.WINDOW_READY });
     }
 
     // Initialize UI
@@ -705,43 +702,31 @@ function initializeSpeakerWindow(deck, config) {
         }, 150);
     });
 
-    // Listen to slide changes to update speaker view
-    deck.on('activate', () => {
-        const index = deck.slide();
-        if (index !== currentIndex) {
-            currentIndex = index;
-            updateSlides();
-            scrollToCurrentSlide();
-        }
-    });
-
     // Wait for DOM to be ready, then request sync and calculate scales
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 updateSlides();
-                initializeScales();
                 requestSync();
             }, 100);
         });
     } else {
         setTimeout(() => {
             updateSlides();
-            initializeScales();
             requestSync();
         }, 100);
     }
 
-    // Forward arrow keys and other navigation keys to main window
+    // Forward arrow keys and other navigation keys to main window.
+    // Capture phase + stopImmediatePropagation prevents bespoke nav/bullets
+    // in speaker window from independently processing the key (desync fix).
+    const navigationKeys = [
+        'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+        ' ', 'Space', 'PageUp', 'PageDown', 'Home', 'End'
+    ];
     window.addEventListener('keydown', (event) => {
-        // Arrow keys, space, page up/down, home, end
-        const navigationKeys = [
-            'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
-            ' ', 'Space', 'PageUp', 'PageDown', 'Home', 'End'
-        ];
-
         if (navigationKeys.includes(event.key) || event.keyCode === 32) {
-            // Send key event to main window
+            event.stopImmediatePropagation();
             sendMessage(channel, {
                 type: MESSAGE_TYPES.KEYDOWN,
                 key: event.key,
@@ -749,7 +734,7 @@ function initializeSpeakerWindow(deck, config) {
                 keyCode: event.keyCode,
             });
         }
-    });
+    }, true);
 
     // Clean up on window close
     window.addEventListener('beforeunload', () => {
